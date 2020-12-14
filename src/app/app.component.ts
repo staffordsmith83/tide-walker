@@ -20,11 +20,22 @@ export class AppComponent {
     this.map.setZoom(10); 
 
     // Error in this method call?
+    // features seems to be a strange format... We want an iterable 1D array, 
+    // where there is an element for each geoJson feature, and each element has accessible properties
+    // need to be able to access the name using feature.name
+    // Browser console suggests its read in in a weird
+
+
     // Had to change sample-farms.geojson to farms.geojson... Was getting 400 error...
     this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, 
     function (features: any) {
     console.log(features);
   });
+
+    // Old method call using thick arrow notation:
+    // this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, features => {
+    //   console.log(features);
+    // });
 
   }
 }
