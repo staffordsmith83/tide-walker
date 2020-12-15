@@ -27,7 +27,7 @@ export class AppComponent {
 
 
     // Had to change sample-farms.geojson to farms.geojson... Was getting 400 error...
-    this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, 
+    this.map.data.loadGeoJson('http://localhost:4200/assets/reformatted.geojson', {}, 
     function (features: any) {
     console.log(features);
   });
