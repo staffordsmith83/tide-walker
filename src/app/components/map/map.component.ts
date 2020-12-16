@@ -1,5 +1,7 @@
+import { GoogleMapsAPIWrapper } from '@agm/core';
 import { MVCArray } from '@agm/core/services/google-maps-types';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { debug } from 'console';
 import { Farm } from 'src/app/models/Farm';
 
 @Component({
@@ -73,26 +75,27 @@ export class MapComponent implements OnInit {
       'overlaycomplete',
       (event) => {
         
-        // get overlay paths
-        const path = event.overlay.getPaths();
+        
 
         // remove overlay from the map
         event.overlay.setMap(null);
 
         // disable drawing manager
-        this.drawingManager.setDrawingMode(null);
+        this.drawingManager?.setDrawingMode(null);
 
-        
-        // create a polygon object from the path
-        var polygon = new google.maps.Polygon({
-          fillColor: 'red',
-          strokeWeight: 1,
-          editable: false,
-          draggable: true,
-          paths: path,
-          map: map
+        // get overlay paths
+        const geom = new google.maps.Data.Polygon(event.overlay.getPaths());
+
+        // create a Data.Feature object from the shape we drew
+        var feature = new google.maps.Data.Feature({
+          geometry: geom,
+          id: 'testNameId',
+          properties: {}
         });
 
+
+        this.map?.data.add(feature);
+        // google.maps.event.trigger(map, 'resize');
       
       // TODO: Get feature name and other attributes from the user, like in ArcGIS
 
