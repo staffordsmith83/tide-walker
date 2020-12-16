@@ -1,7 +1,7 @@
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { MVCArray } from '@agm/core/services/google-maps-types';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { debug } from 'console';
+// import { debug } from 'console';
 import { Farm } from 'src/app/models/Farm';
 
 @Component({
@@ -16,8 +16,7 @@ export class MapComponent implements OnInit {
   // Declare types
   map: google.maps.Map<Element> | undefined; // important to declare the type of property map, so we can refer to it with this.map
   drawingManager: google.maps.drawing.DrawingManager | undefined;
-  
-  
+
   // Constructor method. Not used...
   constructor() {}
 
@@ -33,19 +32,21 @@ export class MapComponent implements OnInit {
     this.map.setZoom(11);
     this.map.setMapTypeId('satellite');
 
-    // Had to change sample-farms.geojson to farms.geojson... Was getting 400 error...
+    // Load the geojson and do stuff with the callback function
+    // The callback function is invoked after all features are loaded, and has the features as a parameter
     this.map.data.loadGeoJson(
       'http://localhost:4200/assets/farms.geojson',
-      {},
+      {}, //options go here
       (features: google.maps.Data.Feature[]) => {
         const bbox = new google.maps.LatLngBounds();
 
+        // Loop through each feature
         for (const feature of features) {
           const farmName = feature.getProperty('name');
-          console.log(`this is a feature. name [${farmName}]`);
           // get the feature geometry, which is of type google.maps.Data.Geometry
           // then typecast it to a google maps data polygon,
-          const polygon = feature.getGeometry() as google.maps.Data.Polygon;
+          // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
+          const polygon = feature.getGeometry();
           polygon.forEachLatLng((LatLng) => {
             bbox.extend(LatLng);
           });
@@ -74,40 +75,43 @@ export class MapComponent implements OnInit {
       this.drawingManager,
       'overlaycomplete',
       (event) => {
-        
-        
-
         // remove overlay from the map
         event.overlay.setMap(null);
 
         // disable drawing manager
         this.drawingManager?.setDrawingMode(null);
 
-        // get overlay paths
-        const geom = new google.maps.Data.Polygon(event.overlay.getPaths());
+        // Get feature name from user
+        // TODO: use the new attribute-form component, to let users enter a full range of attributes
+        // The attribute field list should be extracted fromt he layer you are currently editing
+        // And the form dynamically built.
+        const featureName: string = prompt('What is the name of the feature?');
 
-        // create a Data.Feature object from the shape we drew
-        var feature = new google.maps.Data.Feature({
-          geometry: geom,
-          id: 'testNameId',
-          properties: {}
+        // convert polygon to maps.data.feature and add it to map.data
+        const feature = new google.maps.Data.Feature({
+          geometry: new google.maps.Data.Polygon([
+            event.overlay.getPath().getArray(),
+          ]),
+          properties: {
+            name: featureName,
+          },
         });
-
-
         this.map?.data.add(feature);
+
+        // push the farm name to our list of feature names
+        const farmName = feature.getProperty('name');
+        farms.push({ farmName });
+
         // google.maps.event.trigger(map, 'resize');
-      
-      // TODO: Get feature name and other attributes from the user, like in ArcGIS
 
+        // TODO: Get feature name and other attributes from the user, like in ArcGIS
 
-      // TODO: push the feature name to the list for the TOC
+        // TODO: push the feature name to the list for the TOC
 
         // farms.push({
         //   farmName: farmName
         // });
-      });
-    }
-
-
+      }
+    );
   }
-
+}
