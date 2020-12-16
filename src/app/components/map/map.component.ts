@@ -15,6 +15,7 @@ export class MapComponent implements OnInit {
   map: google.maps.Map<Element> | undefined; // important to declare the type of property map, so we can refer to it with this.map
   drawingManager: google.maps.drawing.DrawingManager | undefined;
   
+  
   // Constructor method. Not used...
   constructor() {}
 
@@ -79,11 +80,8 @@ export class MapComponent implements OnInit {
         event.overlay.setMap(null);
 
         // disable drawing manager
-        try {
-          this.drawingManager.setDrawingMode(null);
-        } catch (error) {
-          
-        }
+        this.drawingManager.setDrawingMode(null);
+
         
         // create a polygon object from the path
         var polygon = new google.maps.Polygon({
