@@ -1,16 +1,16 @@
 <div class="app-container" fxLayout="column">
   
-  <div class="toolbar" style="background-color:rgb(233, 224, 187);">
+  <div class="toolbar">
     <h1>Simple Google Maps Application</h1>
   </div>
 
-  <div class="main" fxLayout="row" fxFlex style="background-color:rgb(251, 255, 0);">
+  <div class="main" fxLayout="row" fxFlex>
     
-    <div class="sidebar" style="background-color:rgb(127, 166, 192);">
+    <div class="sidebar">
       <app-sidebar [farms]="farms"></app-sidebar> 
     </div> 
 
-    <div class="map" fxFlex style="background-color:purple;">
+    <div class="map" fxFlex>
       <app-map (farmsChanged)="onFarmsChanged($event)"></app-map> 
     </div>
 

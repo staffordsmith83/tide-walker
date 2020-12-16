@@ -12,6 +12,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     BrowserModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyDGzi-Na0fdl4bXG7zKhxSq2qIfdlUagUY',
+      libraries: ['drawing']
     }),
     FlexLayoutModule,
   ],
