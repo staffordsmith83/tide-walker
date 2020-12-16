@@ -1,5 +1,6 @@
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Component } from '@angular/core';
+import { Farm } from './models/Farm';
 
 @Component({
   selector: 'app-root',
@@ -9,33 +10,14 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'simple-gmaps-demo';
 
-  map: any; // important to declare the type of property map, so we can refer to it with this.map
-  features: any;  // Do I need this too?
+  map: google.maps.Map | undefined; // important to declare the type of property map, so we can refer to it with this.map
+
+  farms: Farm[] = [];
   
-
-  onMapReady(map: google.maps.Map) {
-
-    this.map = map;
-    this.map.setCenter({lat:-32.910, lng:117.133});
-    this.map.setZoom(10); 
-
-    // Error in this method call?
-    // features seems to be a strange format... We want an iterable 1D array, 
-    // where there is an element for each geoJson feature, and each element has accessible properties
-    // need to be able to access the name using feature.name
-    // Browser console suggests its read in in a weird
-
-
-    // Had to change sample-farms.geojson to farms.geojson... Was getting 400 error...
-    this.map.data.loadGeoJson('http://localhost:4200/assets/reformatted.geojson', {}, 
-    function (features: any) {
-    console.log(features);
-  });
-
-    // Old method call using thick arrow notation:
-    // this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, features => {
-    //   console.log(features);
-    // });
-
+  // When farms changes, update the self.farms property
+  onFarmsChanged(importedFarms: Farm[]) {
+    this.farms = importedFarms
   }
+
+
 }

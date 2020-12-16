@@ -1,24 +1,19 @@
-<h1>Simple Google Maps Application</h1>
-
-
-<div class="app-container">
-  <div class="left">
-    <h3>Should print feature names here</h3>
-    <div class="farm" *ngFor="let feature of features">   
-      {{feature.name}}
-    </div>
+<div class="app-container" fxLayout="column">
   
+  <div class="toolbar">
+    <h1>Simple Google Maps Application</h1>
   </div>
-  <div class="right">
-    <agm-map fxFlex (mapReady)="onMapReady($event)"></agm-map>
+
+  <div class="main" fxLayout="row" fxFlex>
+    
+    <div class="sidebar">
+      <app-sidebar [farms]="farms"></app-sidebar> 
+    </div> 
+
+    <div class="map" fxFlex>
+      <app-map (farmsChanged)="onFarmsChanged($event)"></app-map> 
+    </div>
+
   </div>
+
 </div>
-
-
-
-
-<!-- this creates a google map on the page with the given lat/lng from -->
-<!-- the component as the initial center of the map: -->
-<!-- <agm-map [latitude]="lat" [longitude]="lng">
-  <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
-</agm-map> -->
