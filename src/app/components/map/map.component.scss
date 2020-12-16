@@ -1,0 +1,13 @@
+:host {
+    background-color: navy;
+    height: 100%;
+    display: block;
+}
+
+.map-container {
+    height: 100%;
+
+    agm-map {
+        height: 100%;
+    }
+}

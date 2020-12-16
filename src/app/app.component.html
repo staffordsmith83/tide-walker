@@ -1,24 +1,19 @@
-
 <div class="app-container" fxLayout="column">
   
-  <div class="toolbar" style="background-color:red;">
+  <div class="toolbar" style="background-color:rgb(233, 224, 187);">
     <h1>Simple Google Maps Application</h1>
   </div>
 
-  <div class="main" fxLayout="row" style="background-color:rgb(251, 255, 0);">
-
-    <!-- <div class="sidebar" style="background-color:green;" *ngFor="let feature of features">
-        {{feature.name}}
-    </div>  -->
+  <div class="main" fxLayout="row" fxFlex style="background-color:rgb(251, 255, 0);">
     
-    <div class="sidebar" style="background-color:green;">
-      Feature list goes here
+    <div class="sidebar" style="background-color:rgb(127, 166, 192);">
+      <app-sidebar [farms]="farms"></app-sidebar> 
     </div> 
 
-    <div class="map" style="background-color:purple;">
-      <agm-map (mapReady)="onMapReady($event)"></agm-map>
-  
+    <div class="map" fxFlex style="background-color:purple;">
+      <app-map (farmsChanged)="onFarmsChanged($event)"></app-map> 
     </div>
+
   </div>
 
 </div>
