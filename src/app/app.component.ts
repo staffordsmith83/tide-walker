@@ -27,15 +27,12 @@ export class AppComponent {
 
 
     // Had to change sample-farms.geojson to farms.geojson... Was getting 400 error...
-    this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, 
-    function (features: any) {
-    console.log(features);
-  });
 
     // Old method call using thick arrow notation:
-    // this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, features => {
-    //   console.log(features);
-    // });
+    this.map.data.loadGeoJson('http://localhost:4200/assets/farms.geojson', {}, 
+    (features: google.maps.Data.Feature[]) => {
+      console.log(features);
+    });
 
   }
 }

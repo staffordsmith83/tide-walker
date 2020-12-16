@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AgmCoreModule } from '@agm/core';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppComponent } from './app.component';
 
@@ -9,7 +10,8 @@ import { AppComponent } from './app.component';
     BrowserModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyDGzi-Na0fdl4bXG7zKhxSq2qIfdlUagUY'
-    })
+    }),
+    FlexLayoutModule
   ],
   providers: [],
   declarations: [ AppComponent ],
