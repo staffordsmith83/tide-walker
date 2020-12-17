@@ -7,6 +7,11 @@ import { AppComponent } from './app.component';
 import { MapComponent } from './components/map/map.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { AttributeFormComponent } from './components/attribute-form/attribute-form.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatButtonModule } from '@angular/material/button'
+import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatIconModule } from '@angular/material/icon'
 
 @NgModule({
   imports: [
@@ -16,6 +21,10 @@ import { AttributeFormComponent } from './components/attribute-form/attribute-fo
       libraries: ['drawing']
     }),
     FlexLayoutModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatIconModule
   ],
   providers: [],
   declarations: [AppComponent, MapComponent, SidebarComponent, AttributeFormComponent],
