@@ -1,3 +1,11 @@
+/* TODO: 
+Get feature name and other attributes from the user, like in ArcGIS
+Use the new attribute-form component, to let users enter a full range of attributes
+The attribute field list should be extracted fromt he layer you are currently editing
+And the form dynamically built
+*/
+
+
 import { GoogleMapsAPIWrapper } from '@agm/core';
 import { MVCArray } from '@agm/core/services/google-maps-types';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
@@ -67,7 +75,16 @@ export class MapComponent implements OnInit {
     );
 
     // Setup the drawing manager
-    this.drawingManager = new google.maps.drawing.DrawingManager();
+    this.drawingManager = new google.maps.drawing.DrawingManager({
+      drawingControlOptions: {
+        position: google.maps.ControlPosition.TOP_LEFT,
+        drawingModes: [
+          google.maps.drawing.OverlayType.MARKER,
+          google.maps.drawing.OverlayType.POLYLINE,
+          google.maps.drawing.OverlayType.POLYGON,
+        ],
+      }
+    });
     this.drawingManager.setMap(map); //set the drawing manager to operate on our this.map object
 
     // Setup the actions to perform after shapes are finished
@@ -75,6 +92,9 @@ export class MapComponent implements OnInit {
       this.drawingManager,
       'overlaycomplete',
       (event) => {
+
+        
+
         // remove overlay from the map
         event.overlay.setMap(null);
 
@@ -82,35 +102,47 @@ export class MapComponent implements OnInit {
         this.drawingManager?.setDrawingMode(null);
 
         // Get feature name from user
-        // TODO: use the new attribute-form component, to let users enter a full range of attributes
-        // The attribute field list should be extracted fromt he layer you are currently editing
-        // And the form dynamically built.
+       
+        
         const featureName: string = prompt('What is the name of the feature?');
+        let feature: google.maps.Data.Feature;
+        let geom: google.maps.Data.Geometry;  // this is the parent class of Point, Linestring, and Polygon
 
-        // convert polygon to maps.data.feature and add it to map.data
-        const feature = new google.maps.Data.Feature({
-          geometry: new google.maps.Data.Polygon([
-            event.overlay.getPath().getArray(),
-          ]),
-          properties: {
-            name: featureName,
-          },
-        });
-        this.map?.data.add(feature);
+        switch (event.type) {
+          case google.maps.drawing.OverlayType.MARKER:            
+            geom = new google.maps.Data.Point(event.overlay.getPosition());  
+          break;
 
-        // push the farm name to our list of feature names
-        const farmName = feature.getProperty('name');
-        farms.push({ farmName });
+          case google.maps.drawing.OverlayType.POLYLINE:            
+            geom = new google.maps.Data.LineString(event.overlay.getPath().getArray());  
+          break;
 
-        // google.maps.event.trigger(map, 'resize');
+          case google.maps.drawing.OverlayType.POLYGON:            
+            geom = new google.maps.Data.Polygon([event.overlay.getPath().getArray()]);  
+          break;
 
-        // TODO: Get feature name and other attributes from the user, like in ArcGIS
-
-        // TODO: push the feature name to the list for the TOC
-
-        // farms.push({
-        //   farmName: farmName
-        // });
+        } 
+        
+        // Build the feature and add to the map and TOC as long as we have one of the valid geometries
+        if (geom) {
+          // Build the feature
+          feature = new google.maps.Data.Feature({
+            geometry: geom,
+            properties: {
+              name: featureName
+            }
+          })
+          
+          // Add it to the map
+          this.map?.data.add(feature);
+  
+          // push the farm name to our list of feature names
+          const farmName = feature.getProperty('name');
+          farms.push({ farmName });
+          
+        } else {
+          console.log("Not a valid feature, not adding to TOC.")
+        }
       }
     );
   }
