@@ -54,8 +54,9 @@ export class MapComponent implements OnInit {
           // get the feature geometry, which is of type google.maps.Data.Geometry
           // then typecast it to a google maps data polygon,
           // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
-          const polygon = feature.getGeometry();
-          polygon.forEachLatLng((LatLng) => {
+          // THIS DIDNT SEEM TO BE NECESSARY, AND LETS US DEAL WITH ALL SHAPE TYPES? 
+          const geometry = feature.getGeometry();
+          geometry.forEachLatLng((LatLng) => {
             bbox.extend(LatLng);
           });
 
@@ -85,7 +86,7 @@ export class MapComponent implements OnInit {
         ],
       }
     });
-    this.drawingManager.setMap(map); //set the drawing manager to operate on our this.map object
+    this.drawingManager.setMap(map); //set the drawing manager to operate on our map object
 
     // Setup the actions to perform after shapes are finished
     google.maps.event.addListener(
@@ -93,21 +94,20 @@ export class MapComponent implements OnInit {
       'overlaycomplete',
       (event) => {
 
-        
-
         // remove overlay from the map
         event.overlay.setMap(null);
 
         // disable drawing manager
         this.drawingManager?.setDrawingMode(null);
 
-        // Get feature name from user
-       
-        
+        // Get feature name from user   
         const featureName: string = prompt('What is the name of the feature?');
+        
+        // Setup the variables that we need to scope both inside and ouside out case statements
         let feature: google.maps.Data.Feature;
-        let geom: google.maps.Data.Geometry;  // this is the parent class of Point, Linestring, and Polygon
+        let geom: google.maps.Data.Geometry | undefined;  // this is the parent class of Point, Linestring, and Polygon
 
+        // Build a different google maps data object depending on the type of drawing we made
         switch (event.type) {
           case google.maps.drawing.OverlayType.MARKER:            
             geom = new google.maps.Data.Point(event.overlay.getPosition());  
@@ -136,7 +136,7 @@ export class MapComponent implements OnInit {
           // Add it to the map
           this.map?.data.add(feature);
   
-          // push the farm name to our list of feature names
+          // push the farm name to our list of feature names, which will be dynamically reflected in the sidebar component
           const farmName = feature.getProperty('name');
           farms.push({ farmName });
           
