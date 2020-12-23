@@ -1,6 +1,7 @@
 import { environment } from '../../../environments/environment';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
+import { DOCUMENT } from '@angular/common';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -9,9 +10,9 @@ import * as mapboxgl from 'mapbox-gl';
 export class MapComponent implements OnInit {
   // Declare Types
   map: mapboxgl.Map | undefined;
-  lat = -17.9644;
-  lng = 122.2304;
-  constructor() {}
+  lat = -18.0707;
+  lng = 122.26865;
+  constructor(@Inject(DOCUMENT) private document: Document) {}
   ngOnInit() {
     // mapboxgl.accessToken = environment.mapbox.accessToken;
     let map = new mapboxgl.Map({
@@ -38,38 +39,72 @@ export class MapComponent implements OnInit {
             maxzoom: 22,
           },
         ],
+        glyphs: "http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf"
       },
       zoom: 11,
       center: [this.lng, this.lat],
     });
+
     // Add map controls
     map.addControl(new mapboxgl.NavigationControl());
-    map.addControl(new mapboxgl.GeolocateControl({
-      positionOptions: {
-          enableHighAccuracy: true
-      },
-      trackUserLocation: true
-  }));
-  
+    map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+      })
+    );
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // EVENT DRIVEN BEHAVIOURS
+
+    // Add the NIDEM WMS layer
     map.on('load', function () {
-      map.addSource('nidem', {
-        type: 'raster',
-        tiles: [
-          'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE',
-        ],
+      // map.addSource('nidem', {
+      //   type: 'raster',
+      //   tiles: [
+      //     'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE',
+      //   ],
+      // });
+      // map.addLayer({
+      //   id: 'nidem_wms',
+      //   type: 'raster',
+      //   source: 'nidem',
+      //   paint: {},
+      // });
+
+      // add some dummy point locations
+      map.addSource('points', {
+        type: 'geojson',
+        data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
       });
+
+      // Add a symbol layer
       map.addLayer({
-        id: 'nidem_wms',
-        type: 'raster',
-        source: 'nidem',
-        paint: {},
+        id: 'points',
+        type: 'symbol',
+        source: 'points',
+        layout: {
+          'icon-image': 'custom-marker',
+          // get the title name from the source's "group" property
+          'text-field': ['get', 'group'],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-offset': [0, 1.25],
+          'text-anchor': 'top',
+        },
       });
     });
 
-    // Add the NIDEM source
-    // Correct WMS URl with dynamic bbox
-    // 'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png'
+    // show the coordinates at the mousepoint
+    map.on('mousemove', (e) => {
+      this.document.getElementById('info').innerHTML =
+        // e.point is the x, y coordinates of the mousemove event relative
+        // to the top-left corner of the map
+        JSON.stringify(e.point) +
+        // e.lngLat is the longitude, latitude geographical position of the event
+        JSON.stringify(e.lngLat.wrap());
+    });
   }
 }
 

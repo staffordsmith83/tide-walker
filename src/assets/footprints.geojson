@@ -1,0 +1,15 @@
+{
+"type": "FeatureCollection",
+"name": "footprints",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "group": "Theropod", "id": 979 }, "geometry": { "type": "Point", "coordinates": [ 13611212.6396096162498, -2032992.228049628669396 ] } },
+{ "type": "Feature", "properties": { "fid": 2, "group": "Sauropod", "id": 657 }, "geometry": { "type": "Point", "coordinates": [ 13616800.926891047507524, -2034620.120431610848755 ] } },
+{ "type": "Feature", "properties": { "fid": 3, "group": "Ornithopod", "id": 654 }, "geometry": { "type": "Point", "coordinates": [ 13623749.840641001239419, -2042929.660650087054819 ] } },
+{ "type": "Feature", "properties": { "fid": 4, "group": "Thyreophorans", "id": 54325 }, "geometry": { "type": "Point", "coordinates": [ 13621198.666012521833181, -2053304.437472570221871 ] } },
+{ "type": "Feature", "properties": { "fid": 5, "group": "Sauropod", "id": 74567 }, "geometry": { "type": "Point", "coordinates": [ 13614031.080151556059718, -2057799.364198938943446 ] } },
+{ "type": "Feature", "properties": { "fid": 6, "group": "Ornithopod", "id": 6456 }, "geometry": { "type": "Point", "coordinates": [ 13617262.568014297634363, -2054713.657743539894 ] } },
+{ "type": "Feature", "properties": { "fid": 7, "group": "Sauropod", "id": 5345 }, "geometry": { "type": "Point", "coordinates": [ 13620858.509395392611623, -2044727.631340634310618 ] } },
+{ "type": "Feature", "properties": { "fid": 8, "group": "Thyreophorans", "id": 425 }, "geometry": { "type": "Point", "coordinates": [ 13603899.272341309115291, -2063703.511196277104318 ] } }
+]
+}
