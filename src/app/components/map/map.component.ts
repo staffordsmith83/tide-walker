@@ -8,6 +8,8 @@ import { DOCUMENT } from '@angular/common';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit {
+  // Output decorator to link to other modules
+  // @Output() poiChanged = new EventEmitter<Farm[]>();
   // Declare Types
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
@@ -74,39 +76,51 @@ export class MapComponent implements OnInit {
       //   paint: {},
       // });
 
-      // add some dummy point locations
-      map.addSource('points', {
-        type: 'geojson',
-        data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
-      });
+      map.loadImage(
+        'http://localhost:4200/assets/icons/footprint1.png',
+        function (error, image) {
+            if (error) throw error;
+            map.addImage('footprint', image);
+      
+            // add some dummy point locations
+              map.addSource('points', {
+              type: 'geojson',
+              data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
+            });
 
-      // Add a symbol layer
-      map.addLayer({
-        id: 'points',
-        type: 'symbol',
-        source: 'points',
-        layout: {
-          'icon-image': 'custom-marker',
-          // get the title name from the source's "group" property
-          'text-field': ['get', 'group'],
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-          'text-offset': [0, 1.25],
-          'text-anchor': 'top',
-        },
-      });
-    });
+            // Add a symbol layer
+            map.addLayer({
+              id: 'points',
+              type: 'symbol',
+              source: 'points',
+              layout: {
+                'icon-image': 'footprint',
+                // get the title name from the source's "group" property
+                'text-field': ['get', 'group'],
+                'text-font': ['Open Sans Semibold'],
+                'text-offset': [0, 1.25],
+                'text-anchor': 'top',
+              },
+              paint: {
+                "text-color": "#ffffff"
+              }
+            });
+          });
+        });
 
     // show the coordinates at the mousepoint
-    map.on('mousemove', (e) => {
-      this.document.getElementById('info').innerHTML =
-        // e.point is the x, y coordinates of the mousemove event relative
-        // to the top-left corner of the map
-        JSON.stringify(e.point) +
-        // e.lngLat is the longitude, latitude geographical position of the event
-        JSON.stringify(e.lngLat.wrap());
-    });
-  }
+  map.on('mousemove', (e) => {
+    this.document.getElementById('info').innerHTML =
+      // e.point is the x, y coordinates of the mousemove event relative
+      // to the top-left corner of the map
+      JSON.stringify(e.point) +
+      // e.lngLat is the longitude, latitude geographical position of the event
+      JSON.stringify(e.lngLat.wrap());
+
+  });
+};
 }
+
 
 // /* TODO:
 // Get feature name and other attributes from the user, like in ArcGIS
