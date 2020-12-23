@@ -63,18 +63,20 @@ export class MapComponent implements OnInit {
 
     // Add the NIDEM WMS layer
     map.on('load', function () {
-      // map.addSource('nidem', {
-      //   type: 'raster',
-      //   tiles: [
-      //     'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE',
-      //   ],
-      // });
-      // map.addLayer({
-      //   id: 'nidem_wms',
-      //   type: 'raster',
-      //   source: 'nidem',
-      //   paint: {},
-      // });
+      
+      map.addSource('nidem', {
+        type: 'raster',
+        tiles: [
+          'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE',
+        ],
+      });
+      
+      map.addLayer({
+        id: 'nidem_wms',
+        type: 'raster',
+        source: 'nidem',
+        paint: {},
+      });
 
       map.loadImage(
         'http://localhost:4200/assets/icons/footprint1.png',
