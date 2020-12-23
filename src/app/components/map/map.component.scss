@@ -4,10 +4,7 @@
     display: block;
 }
 
-.map-container {
+.match-parent {
+    width: 100%;
     height: 100%;
-
-    agm-map {
-        height: 100%;
-    }
-}
+  }

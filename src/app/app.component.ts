@@ -8,7 +8,7 @@ import { Farm } from './models/Farm';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  title = 'simple-gmaps-demo';
+  title = 'Mapbox Application';
 
   map: google.maps.Map | undefined; // important to declare the type of property map, so we can refer to it with this.map
 
