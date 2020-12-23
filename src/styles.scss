@@ -8,7 +8,6 @@ body {
     font-family: Garamond, 'Garamond classico', Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
 }
 
+// import the mapbox css styles
+@import url("../node_modules/mapbox-gl/dist/mapbox-gl.css");
 
-
-// html, body { height: 100%; }
-// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

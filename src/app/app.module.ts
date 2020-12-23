@@ -16,10 +16,6 @@ import { MatIconModule } from '@angular/material/icon'
 @NgModule({
   imports: [
     BrowserModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyDGzi-Na0fdl4bXG7zKhxSq2qIfdlUagUY',
-      libraries: ['drawing']
-    }),
     FlexLayoutModule,
     BrowserAnimationsModule,
     MatButtonModule,
