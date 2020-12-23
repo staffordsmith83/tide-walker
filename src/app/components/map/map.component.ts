@@ -80,7 +80,7 @@ export class MapComponent implements OnInit {
 
       map.loadImage(
         'http://localhost:4200/assets/icons/footprint1.png',
-        function (error, image) {
+        function (error: any, image: any) {
             if (error) throw error;
             map.addImage('footprint', image);
       
