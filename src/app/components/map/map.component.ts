@@ -1,12 +1,12 @@
 // TODO: Have button to start amazon ec2 instance so that geoserver becomes accessible! Is that a good idea?
 // Not really aapropriate for end users... But good for my testing app! Show server status, and have start and stop buttons.
-// https://ajahne.github.io/blog/javascript/aws/2019/06/21/launch-stop-terminate-aws-ec2-instance-nodejs.html 
-
+// https://ajahne.github.io/blog/javascript/aws/2019/06/21/launch-stop-terminate-aws-ec2-instance-nodejs.html
 
 import { environment } from '../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
+import { stringify } from '@angular/compiler/src/util';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -19,7 +19,16 @@ export class MapComponent implements OnInit {
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
+  fullRequest = '';
   constructor(@Inject(DOCUMENT) private document: Document) {}
+
+  styleConstructor(tideHeight: string) {
+    let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>ocean<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#000000\" quantity=\"-100\" label=\"below range\" opacity=\"0\"\/>\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#000000\" quantity=\"0\" label=\"exposed\" opacity=\"0\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>\r`;
+    let encodedStyle = encodeURIComponent(sldXmlTemplate);
+    console.log(encodedStyle);
+    return encodedStyle;
+  }
+
   ngOnInit() {
     // mapboxgl.accessToken = environment.mapbox.accessToken;
     let map = new mapboxgl.Map({
@@ -30,7 +39,8 @@ export class MapComponent implements OnInit {
           'raster-tiles': {
             type: 'raster',
             tiles: [
-              'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+              // "http://tile.stamen.com/toner/{z}/{x}/{y}.png",
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             ],
             tileSize: 256,
             attribution:
@@ -46,7 +56,7 @@ export class MapComponent implements OnInit {
             maxzoom: 22,
           },
         ],
-        glyphs: "http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf"
+        glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
       },
       zoom: 11,
       center: [this.lng, this.lat],
@@ -67,22 +77,15 @@ export class MapComponent implements OnInit {
     // EVENT DRIVEN BEHAVIOURS
 
     // Add the NIDEM WMS layer
-    map.on('load', function () {
-      
-      
-      let sld_body:string = "http://localhost:4200/assets/sld/raster_discretecolors.sld"
+    map.on('load', () => {
+      let getMapRequest: string =
+        'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+      let sld_style: string = this.styleConstructor('0');
+      let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
 
-      let request:string =  "http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE"
-      
-      let fullRequest = request + "&SLD=" + sld_body
-
-      console.log(fullRequest)
-      
       map.addSource('nidem', {
         type: 'raster',
-        tiles: [ fullRequest
-          ,
-        ],
+        tiles: [fullRequest],
       });
 
       map.addLayer({
@@ -95,78 +98,76 @@ export class MapComponent implements OnInit {
       map.loadImage(
         'http://localhost:4200/assets/icons/footprint1.png',
         function (error: any, image: any) {
-            if (error) throw error;
-            map.addImage('footprint', image);
-      
-            // add some dummy point locations
-              map.addSource('points', {
-              type: 'geojson',
-              data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
-            });
+          if (error) throw error;
+          map.addImage('footprint', image);
 
-            // Add a symbol layer
-            map.addLayer({
-              id: 'poi',
-              type: 'symbol',
-              source: 'points',
-              layout: {
-                'icon-image': 'footprint',
-                // get the title name from the source's "group" property
-                'text-field': ['get', 'group'],
-                'text-font': ['Open Sans Semibold'],
-                'text-offset': [0, 1.25],
-                'text-anchor': 'top',
-              },
-              paint: {
-                "text-color": "#ffffff"
-              }
-            });
+          // add some dummy point locations
+          map.addSource('points', {
+            type: 'geojson',
+            data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
           });
-        });
+
+          // Add a symbol layer
+          map.addLayer({
+            id: 'poi',
+            type: 'symbol',
+            source: 'points',
+            layout: {
+              'icon-image': 'footprint',
+              // get the title name from the source's "group" property
+              'text-field': ['get', 'group'],
+              'text-font': ['Open Sans Semibold'],
+              'text-offset': [0, 1.25],
+              'text-anchor': 'top',
+            },
+            paint: {
+              'text-color': '#ffffff',
+            },
+          });
+        }
+      );
+    });
 
     // show the coordinates at the mousepoint
-  map.on('mousemove', (e) => {
-    this.document.getElementById('info').innerHTML =
-      // e.point is the x, y coordinates of the mousemove event relative
-      // to the top-left corner of the map
-      JSON.stringify(e.point) +
-      // e.lngLat is the longitude, latitude geographical position of the event
-      JSON.stringify(e.lngLat.wrap());
+    map.on('mousemove', (e) => {
+      this.document.getElementById('info').innerHTML =
+        // e.point is the x, y coordinates of the mousemove event relative
+        // to the top-left corner of the map
+        JSON.stringify(e.point) +
+        // e.lngLat is the longitude, latitude geographical position of the event
+        JSON.stringify(e.lngLat.wrap());
+    });
 
-  });
-
-  // Do stuff when we click on the map
-// When a click event occurs on a feature in the places layer, open a popup at the
-// location of the feature, with description HTML from its properties.
+    // Do stuff when we click on the map
+    // When a click event occurs on a feature in the places layer, open a popup at the
+    // location of the feature, with description HTML from its properties.
     // map.on('click', 'poi', function (e) {
     //   var coordinates = e.features[0].geometry.coordinates[0][0].slice();
     //   var description = e.features[0].properties.description;
-      
+
     //   // Ensure that if the map is zoomed out such that multiple
     //   // copies of the feature are visible, the popup appears
     //   // over the copy being pointed to.
     //   while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
     //   coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
     //   }
-      
+
     //   new mapboxgl.Popup()
     //   .setLngLat(coordinates)
     //   .setHTML(description)
     //   .addTo(map);
     //   });
-      
+
     //   // Change the cursor to a pointer when the mouse is over the places layer.
     //   map.on('mouseenter', 'places', function () {
     //   map.getCanvas().style.cursor = 'pointer';
     //   });
-      
+
     //   // Change it back to a pointer when it leaves.
     //   map.on('mouseleave', 'places', function () {
     //   map.getCanvas().style.cursor = '';
     //   });
-
-
-};
+  }
 }
 
 // NEXT, get each of the loaded features, add the names to a list, and emit them so they are available to other components
@@ -189,12 +190,6 @@ export class MapComponent implements OnInit {
 
 //         this.map?.fitBounds(bbox); // why the ?
 //         this.farmsChanged.emit(farms);
-
-
-
-
-
-
 
 // /* TODO:
 // Get feature name and other attributes from the user, like in ArcGIS
