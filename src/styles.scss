@@ -1,11 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/purple-green.css';
 
 html,
 body {
     height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: Garamond, 'Garamond classico', Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
+    font-family: Garamond, 'Garamond classico', Baskerville, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif
 }
 
 // import the mapbox css styles

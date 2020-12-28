@@ -1,3 +1,8 @@
+// TODO: Have button to start amazon ec2 instance so that geoserver becomes accessible! Is that a good idea?
+// Not really aapropriate for end users... But good for my testing app! Show server status, and have start and stop buttons.
+// https://ajahne.github.io/blog/javascript/aws/2019/06/21/launch-stop-terminate-aws-ec2-instance-nodejs.html 
+
+
 import { environment } from '../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
@@ -64,13 +69,22 @@ export class MapComponent implements OnInit {
     // Add the NIDEM WMS layer
     map.on('load', function () {
       
+      
+      let sld_body:string = "http://localhost:4200/assets/sld/raster_discretecolors.sld"
+
+      let request:string =  "http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE"
+      
+      let fullRequest = request + "&SLD=" + sld_body
+
+      console.log(fullRequest)
+      
       map.addSource('nidem', {
         type: 'raster',
-        tiles: [
-          'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE',
+        tiles: [ fullRequest
+          ,
         ],
       });
-      
+
       map.addLayer({
         id: 'nidem_wms',
         type: 'raster',
@@ -92,7 +106,7 @@ export class MapComponent implements OnInit {
 
             // Add a symbol layer
             map.addLayer({
-              id: 'points',
+              id: 'poi',
               type: 'symbol',
               source: 'points',
               layout: {
@@ -120,8 +134,66 @@ export class MapComponent implements OnInit {
       JSON.stringify(e.lngLat.wrap());
 
   });
+
+  // Do stuff when we click on the map
+// When a click event occurs on a feature in the places layer, open a popup at the
+// location of the feature, with description HTML from its properties.
+    // map.on('click', 'poi', function (e) {
+    //   var coordinates = e.features[0].geometry.coordinates[0][0].slice();
+    //   var description = e.features[0].properties.description;
+      
+    //   // Ensure that if the map is zoomed out such that multiple
+    //   // copies of the feature are visible, the popup appears
+    //   // over the copy being pointed to.
+    //   while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    //   coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    //   }
+      
+    //   new mapboxgl.Popup()
+    //   .setLngLat(coordinates)
+    //   .setHTML(description)
+    //   .addTo(map);
+    //   });
+      
+    //   // Change the cursor to a pointer when the mouse is over the places layer.
+    //   map.on('mouseenter', 'places', function () {
+    //   map.getCanvas().style.cursor = 'pointer';
+    //   });
+      
+    //   // Change it back to a pointer when it leaves.
+    //   map.on('mouseleave', 'places', function () {
+    //   map.getCanvas().style.cursor = '';
+    //   });
+
+
 };
 }
+
+// NEXT, get each of the loaded features, add the names to a list, and emit them so they are available to other components
+// Modify this
+// Loop through each feature
+//         for (const feature of features) {
+//           const farmName = feature.getProperty('name');
+//           // get the feature geometry, which is of type google.maps.Data.Geometry
+//           // then typecast it to a google maps data polygon,
+//           // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
+//           // THIS DIDNT SEEM TO BE NECESSARY, AND LETS US DEAL WITH ALL SHAPE TYPES?
+//           const geometry = feature.getGeometry();
+//           geometry.forEachLatLng((LatLng) => {
+//             bbox.extend(LatLng);
+//           });
+
+//           farms.push({ farmName });
+//           console.log(farmName);
+//         }
+
+//         this.map?.fitBounds(bbox); // why the ?
+//         this.farmsChanged.emit(farms);
+
+
+
+
+
 
 
 // /* TODO:
