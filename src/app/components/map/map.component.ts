@@ -19,13 +19,20 @@ export class MapComponent implements OnInit {
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
-  fullRequest = '';
+  fullRequest = "";
+  tideHeight = "-1.5";
   constructor(@Inject(DOCUMENT) private document: Document) {}
 
   styleConstructor(tideHeight: string) {
-    let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>ocean<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#000000\" quantity=\"-100\" label=\"below range\" opacity=\"0\"\/>\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#000000\" quantity=\"0\" label=\"exposed\" opacity=\"0\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>\r`;
+    // insert the tideHeight into the following string, which is a full sld style file as a string
+    // important to escape this to put in string.
+    // important to put full workspace:layer name in the name tag of the sld xml!
+    let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>NIDEM:NIDEM_mosaic<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
+    // let sldXmlTemplate: string = `<ColorMap type=\"intervals\" extended=\"true\">\r\n<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"0.5\"\/>\r\n<\/ColorMap>`;
+    
+    // encode the sld to be passed as a url, use encodeURIComponent to encode the ? characters especially
     let encodedStyle = encodeURIComponent(sldXmlTemplate);
-    console.log(encodedStyle);
+    
     return encodedStyle;
   }
 
@@ -80,8 +87,9 @@ export class MapComponent implements OnInit {
     map.on('load', () => {
       let getMapRequest: string =
         'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
-      let sld_style: string = this.styleConstructor('0');
+      let sld_style: string = this.styleConstructor(this.tideHeight);
       let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
+      console.log(fullRequest);
 
       map.addSource('nidem', {
         type: 'raster',
@@ -121,7 +129,7 @@ export class MapComponent implements OnInit {
               'text-anchor': 'top',
             },
             paint: {
-              'text-color': '#ffffff',
+              'text-color': '#000000',
             },
           });
         }
