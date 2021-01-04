@@ -20,7 +20,7 @@ export class MapComponent implements OnInit {
   lat = -18.0707;
   lng = 122.26865;
   fullRequest = "";
-  tideHeight = "-1.5";
+  tideHeight = "0";
   constructor(@Inject(DOCUMENT) private document: Document) {}
 
   styleConstructor(tideHeight: string) {
