@@ -11,7 +11,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatButtonModule } from '@angular/material/button'
 import { MatToolbarModule } from '@angular/material/toolbar'
-import { MatIconModule } from '@angular/material/icon'
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { TideInputBasicComponent } from './components/tide-input-basic/tide-input-basic.component'
 
 @NgModule({
   imports: [
@@ -20,10 +23,12 @@ import { MatIconModule } from '@angular/material/icon'
     BrowserAnimationsModule,
     MatButtonModule,
     MatToolbarModule,
-    MatIconModule
+    MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   providers: [],
-  declarations: [AppComponent, MapComponent, SidebarComponent, AttributeFormComponent],
+  declarations: [AppComponent, MapComponent, SidebarComponent, AttributeFormComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
