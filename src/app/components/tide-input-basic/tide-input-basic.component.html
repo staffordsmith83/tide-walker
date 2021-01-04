@@ -1,7 +1,7 @@
 <div class="example-container">
-    <mat-form-field hintLabel="Enter a decimal value from -10.0 to 10.0" appearance="fill">
+    <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
       <mat-label>Enter some input</mat-label>
-      <input matInput #input maxlength="10" placeholder="enter tide height">
+      <input matInput #input maxlength="10" [placeholder]="placeholderText">
       <mat-hint align="end">{{input.value?.length || 0}}/10</mat-hint>
     </mat-form-field>
   
