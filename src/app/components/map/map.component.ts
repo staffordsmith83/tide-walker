@@ -10,6 +10,7 @@ import { stringify } from '@angular/compiler/src/util';
 
 import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
+import { debug } from 'console';
 
 
 
@@ -50,6 +51,8 @@ export class MapComponent implements OnInit, OnDestroy {
     
     // THIS SECTION TO GET THE TIDE HEIGHT FROM OTHER COMPONENT VIA THE SERVICE?
     this.subscription = this.data.currentMessage.subscribe(message => this.message = message);
+
+    console.log(this.message);
   
     let map = new mapboxgl.Map({
       container: 'map',
@@ -102,7 +105,7 @@ export class MapComponent implements OnInit, OnDestroy {
         'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
       let sld_style: string = this.styleConstructor(this.tideHeight);
       let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
-      console.log(fullRequest);
+      // console.log(fullRequest);
 
       map.addSource('nidem', {
         type: 'raster',
@@ -158,6 +161,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // e.lngLat is the longitude, latitude geographical position of the event
         JSON.stringify(e.lngLat.wrap());
     });
+    console.log(this.subscription);
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

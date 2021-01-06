@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
   templateUrl: './tide-input-basic.component.html',
   styleUrls: ['./tide-input-basic.component.scss']
 })
-export class TideInputBasicComponent implements OnInit, OnDestroy {
+export class TideInputBasicComponent {
 
   message:string | any;
   subscription: Subscription | any;
@@ -24,17 +24,18 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
   newTideHeight() {
     this.userTideHeight = this.userTideHeight;
     console.log(this.userTideHeight);
+    this.data.changeMessage(this.userTideHeight);
   }
 
-  ngOnInit() {
-    this.subscription = this.data.currentMessage.subscribe(message => this.message = message)
-  }
+  // ngOnInit() {
+  //   this.subscription = this.data.currentMessage.subscribe(message => this.message = message)
+  // }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.subscription.unsubscribe();
+  // }
 
-  newMessage() {
-    this.data.changeMessage("Hello from Sibling")
-  }
+  // newMessage() {
+  //   this.data.changeMessage("Hello from Sibling")
+  // }
 }
