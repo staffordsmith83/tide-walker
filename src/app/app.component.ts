@@ -1,5 +1,5 @@
 import { analyzeAndValidateNgModules } from '@angular/compiler';
-import { Component } from '@angular/core';
+import { Input, Output, Component } from '@angular/core';
 import { Farm } from './models/Farm';
 
 @Component({
@@ -9,14 +9,16 @@ import { Farm } from './models/Farm';
 })
 export class AppComponent {
   title = 'Mapbox Application';
+  tideHeight: string;
 
   map: google.maps.Map | undefined; // important to declare the type of property map, so we can refer to it with this.map
 
   farms: Farm[] = [];
   
   // When farms changes, update the self.farms property
-  onFarmsChanged(importedFarms: Farm[]) {
-    this.farms = importedFarms
+  onTideChanged(userTideHeight: string) {
+    this.tideHeight = userTideHeight;
+    console.log(this.tideHeight);
   }
 
 

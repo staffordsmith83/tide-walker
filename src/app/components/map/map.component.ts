@@ -3,7 +3,7 @@
 // https://ajahne.github.io/blog/javascript/aws/2019/06/21/launch-stop-terminate-aws-ec2-instance-nodejs.html
 
 import { environment } from '../../../environments/environment';
-import { Component, OnInit, ChangeDetectorRef, Inject, OnDestroy } from '@angular/core';
+import { Input, Component, OnInit, ChangeDetectorRef, Inject, OnDestroy, DebugEventListener } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { stringify } from '@angular/compiler/src/util';
@@ -19,24 +19,28 @@ import { debug } from 'console';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit, OnDestroy {
+export class MapComponent implements OnInit {
   // Output decorator to link to other modules
   // @Output() poiChanged = new EventEmitter<Farm[]>();
-  // Declare Types
-  message: string | any;
-  subscription: Subscription | any;
-  
+
+
+  // THIS PART NOT WORKING - it messe up the geoserver request.
+  // @Input() tideHeight = "0";
+  tideHeight = "0";
+
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
   fullRequest = "";
-  tideHeight = "0";
-  constructor(@Inject(DOCUMENT) private document: Document, private data: DataService) {}
+  
+  constructor(@Inject(DOCUMENT) private document: Document) {}
 
   styleConstructor(tideHeight: string) {
     // insert the tideHeight into the following string, which is a full sld style file as a string
     // important to escape this to put in string.
     // important to put full workspace:layer name in the name tag of the sld xml!
+    console.log(this.tideHeight);
+    // debug;
     let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>NIDEM:NIDEM_mosaic<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
     // let sldXmlTemplate: string = `<ColorMap type=\"intervals\" extended=\"true\">\r\n<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"0.5\"\/>\r\n<\/ColorMap>`;
     
@@ -48,11 +52,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // mapboxgl.accessToken = environment.mapbox.accessToken;
-    
-    // THIS SECTION TO GET THE TIDE HEIGHT FROM OTHER COMPONENT VIA THE SERVICE?
-    this.subscription = this.data.currentMessage.subscribe(message => this.message = message);
 
-    console.log(this.message);
   
     let map = new mapboxgl.Map({
       container: 'map',
@@ -161,10 +161,8 @@ export class MapComponent implements OnInit, OnDestroy {
         // e.lngLat is the longitude, latitude geographical position of the event
         JSON.stringify(e.lngLat.wrap());
     });
-    console.log(this.subscription);
   }
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+}
 
     // Do stuff when we click on the map
     // When a click event occurs on a feature in the places layer, open a popup at the
@@ -195,8 +193,6 @@ export class MapComponent implements OnInit, OnDestroy {
     //   map.on('mouseleave', 'places', function () {
     //   map.getCanvas().style.cursor = '';
     //   });
-  }
-}
 
 // NEXT, get each of the loaded features, add the names to a list, and emit them so they are available to other components
 // Modify this
