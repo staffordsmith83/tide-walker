@@ -1,7 +1,11 @@
 <div class="user-input-container">
     <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
-      <mat-label>Enter some input</mat-label>
-      <input matInput #input maxlength="10" [placeholder]="placeholderText">
+      <mat-label>Enter tide height</mat-label>
+      <input 
+        matInput #input maxlength="10" 
+        [placeholder]="placeholderText"
+        (change)="newTideHeight()"
+        [(ngModel)]='userTideHeight'>
       <mat-hint align="end">{{input.value?.length || 0}}/10</mat-hint>
     </mat-form-field>
     <!-- <p>{{ userTideHeight }}</p> -->
@@ -14,4 +18,3 @@
       <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
     </mat-form-field> -->
   </div>
-  

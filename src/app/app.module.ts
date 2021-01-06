@@ -15,6 +15,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { TideInputBasicComponent } from './components/tide-input-basic/tide-input-basic.component'
+import { DataService } from './services/data.service';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
@@ -25,9 +28,11 @@ import { TideInputBasicComponent } from './components/tide-input-basic/tide-inpu
     MatToolbarModule,
     MatIconModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatInputModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [DataService],
   declarations: [AppComponent, MapComponent, SidebarComponent, AttributeFormComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })

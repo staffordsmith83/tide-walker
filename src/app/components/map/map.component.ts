@@ -3,25 +3,34 @@
 // https://ajahne.github.io/blog/javascript/aws/2019/06/21/launch-stop-terminate-aws-ec2-instance-nodejs.html
 
 import { environment } from '../../../environments/environment';
-import { Component, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Inject, OnDestroy } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { stringify } from '@angular/compiler/src/util';
+
+import { DataService } from 'src/app/services/data.service';
+import { Subscription } from 'rxjs';
+
+
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   // Output decorator to link to other modules
   // @Output() poiChanged = new EventEmitter<Farm[]>();
   // Declare Types
+  message: string | any;
+  subscription: Subscription | any;
+  
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
   fullRequest = "";
   tideHeight = "0";
-  constructor(@Inject(DOCUMENT) private document: Document) {}
+  constructor(@Inject(DOCUMENT) private document: Document, private data: DataService) {}
 
   styleConstructor(tideHeight: string) {
     // insert the tideHeight into the following string, which is a full sld style file as a string
@@ -38,6 +47,10 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     // mapboxgl.accessToken = environment.mapbox.accessToken;
+    
+    // THIS SECTION TO GET THE TIDE HEIGHT FROM OTHER COMPONENT VIA THE SERVICE?
+    this.subscription = this.data.currentMessage.subscribe(message => this.message = message);
+  
     let map = new mapboxgl.Map({
       container: 'map',
       style: {
@@ -145,6 +158,9 @@ export class MapComponent implements OnInit {
         // e.lngLat is the longitude, latitude geographical position of the event
         JSON.stringify(e.lngLat.wrap());
     });
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
 
     // Do stuff when we click on the map
     // When a click event occurs on a feature in the places layer, open a popup at the
