@@ -1,4 +1,4 @@
-import { Output, Component, OnDestroy, OnInit } from '@angular/core';
+import { Output, Component, OnDestroy, OnInit, EventEmitter } from '@angular/core';
 import { FileDetector } from 'protractor';
 import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
@@ -11,10 +11,10 @@ import { MatInputModule } from '@angular/material/input';
   styleUrls: ['./tide-input-basic.component.scss']
 })
 export class TideInputBasicComponent {
-  @Output() userTideHeight = '0.0'; //Maybe unecessary???? Or maybe newTideHeight updater method is unecessary?
+  //set the custom event
+  @Output() tideUpdated = new EventEmitter<string>(); //Maybe unecessary???? Or maybe newTideHeight updater method is unecessary?
+  newTideHeight = '';
   
-  message:string | any;
-  subscription: Subscription | any;
 
   hintLabelText: string = "Enter a decimal value from -10.0 to 10.0";
   placeholderText: string = "enter tide height";
@@ -22,10 +22,9 @@ export class TideInputBasicComponent {
 
   constructor(private data: DataService) { }
 
-  // newTideHeight() {
-  //   this.userTideHeight = this.userTideHeight;
-  //   // this.data.changeMessage(this.userTideHeight);
-  // }
+  onTideUpdated() {
+    this.tideUpdated.emit(this.newTideHeight);
+  }
 
   // ngOnInit() {
   //   this.subscription = this.data.currentMessage.subscribe(message => this.message = message)

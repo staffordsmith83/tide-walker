@@ -9,16 +9,13 @@ import { Farm } from './models/Farm';
 })
 export class AppComponent {
   title = 'Mapbox Application';
-  tideHeight: string;
+  tideHeight: string = '0.0';
 
   map: google.maps.Map | undefined; // important to declare the type of property map, so we can refer to it with this.map
-
-  farms: Farm[] = [];
   
-  // When farms changes, update the self.farms property
-  onTideChanged(userTideHeight: string) {
+  onNewTideReceived(userTideHeight: string) {
     this.tideHeight = userTideHeight;
-    console.log(this.tideHeight);
+    console.log("New tide height received by App Component: " + this.tideHeight);
   }
 
 

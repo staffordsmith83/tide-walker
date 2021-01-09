@@ -4,7 +4,8 @@
       <input 
         matInput #input maxlength="10" 
         [placeholder]="placeholderText"
-        [(ngModel)]='userTideHeight'>
+        [(ngModel)]='newTideHeight'
+        (keydown.enter)="onTideUpdated()">
       <mat-hint align="end">{{input.value?.length || 0}}/10</mat-hint>
     </mat-form-field>
     <!-- <p>{{ userTideHeight }}</p> -->
