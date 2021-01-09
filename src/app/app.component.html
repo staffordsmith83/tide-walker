@@ -7,11 +7,11 @@
     <span>Tide Walker</span>
     <!-- <span>Tide Height {{ tideHeight }}</span> -->
     <span fxFlex></span>
-    <!-- <button mat-icon-button>
-      <mat-icon>search</mat-icon>
-    </button> -->
     <app-tide-input-basic (tideUpdated)="onNewTideReceived($event)">
     </app-tide-input-basic>
+    <button mat-icon-button>
+      <mat-icon>search</mat-icon>
+    </button>
   </mat-toolbar>
 
   <!-- WHad to set fxFlex to 90% in next line to prevent map being larger than page... -->
