@@ -138,39 +138,38 @@ export class MapComponent implements OnInit {
 
       // ADD POINT DATA SECTION -
       // TODO: throwing errors about 'map property of undefined'
+      // change to arrow function maybe?
       this.map?.loadImage(
         'http://localhost:4200/assets/icons/footprint1.png',
-        function (this: any, error: any, image: any) {
+        (error: any, image: any) => {
           if (error) throw error;
-          this.map.addImage('footprint', image);
-
-          // add some dummy point locations
-          this.map.addSource('points', {
-            type: 'geojson',
-            data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
-          });
-
-          // Add a symbol layer
-          this.map.addLayer({
-            id: 'poi',
-            type: 'symbol',
-            source: 'points',
-            layout: {
-              'icon-image': 'footprint',
-              // get the title name from the source's "group" property
-              'text-field': ['get', 'group'],
-              'text-font': ['Open Sans Semibold'],
-              'text-offset': [0, 1.25],
-              'text-anchor': 'top',
-            },
-            paint: {
-              'text-color': '#000000',
-            },
-          });
+          this.map?.addImage('footprint', image);
         }
       );
 
-      
+      // add some dummy point locations
+      this.map?.addSource('points', {
+        type: 'geojson',
+        data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
+      });
+
+      // Add a symbol layer
+      this.map?.addLayer({
+        id: 'poi',
+        type: 'symbol',
+        source: 'points',
+        layout: {
+          'icon-image': 'footprint',
+          // get the title name from the source's "group" property
+          'text-field': ['get', 'group'],
+          'text-font': ['Open Sans Semibold'],
+          'text-offset': [0, 1.25],
+          'text-anchor': 'top',
+        },
+        paint: {
+          'text-color': '#000000',
+        },
+      });
     });
 
     //   //////////////////////////////////////////////
