@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "simple-gmaps-demo": {
+    "tide-walker": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/simple-gmaps-demo",
+            "outputPath": "dist/tide-walker",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -55,7 +55,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -69,20 +69,20 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "simple-gmaps-demo:build",
+            "browserTarget": "tide-walker:build",
             "proxyConfig": "src/proxy.conf.json"
 
           },
           "configurations": {
             "production": {
-              "browserTarget": "simple-gmaps-demo:build:production"
+              "browserTarget": "tide-walker:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "simple-gmaps-demo:build"
+            "browserTarget": "tide-walker:build"
           }
         },
         "test": {
@@ -120,16 +120,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "simple-gmaps-demo:serve"
+            "devServerTarget": "tide-walker:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "simple-gmaps-demo:serve:production"
+              "devServerTarget": "tide-walker:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "simple-gmaps-demo"
+  "defaultProject": "tide-walker"
 }

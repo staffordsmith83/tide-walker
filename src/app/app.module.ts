@@ -6,7 +6,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppComponent } from './app.component';
 import { MapComponent } from './components/map/map.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { AttributeFormComponent } from './components/attribute-form/attribute-form.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatButtonModule } from '@angular/material/button'
@@ -33,7 +32,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule
   ],
   providers: [DataService],
-  declarations: [AppComponent, MapComponent, SidebarComponent, AttributeFormComponent, TideInputBasicComponent],
+  declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

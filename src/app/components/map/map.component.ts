@@ -40,8 +40,7 @@ export class MapComponent implements OnInit {
   lng = 122.26865;
   fullRequest = '';
 
-  constructor(@Inject(DOCUMENT) private document: Document) {
-  }
+  constructor(@Inject(DOCUMENT) private document: Document) {}
 
   styleConstructor(tideHeight: string) {
     // insert the tideHeight into the following string, which is a full sld style file as a string
@@ -72,7 +71,7 @@ export class MapComponent implements OnInit {
               // "http://tile.stamen.com/toner/{z}/{x}/{y}.png",
               'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             ],
-            tileSize: 256
+            tileSize: 256,
           },
         },
         layers: [
@@ -124,6 +123,21 @@ export class MapComponent implements OnInit {
         paint: {},
       });
 
+      // Add the legend
+      this.map?.addSource('nidemLegend', {
+        type: 'image',
+        url:
+          'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png',
+        coordinates: [
+          [-80.425, 46.437],
+          [-71.516, 46.437],
+          [-71.516, 37.936],
+          [-80.425, 37.936],
+        ],
+      });
+
+      // ADD POINT DATA SECTION -
+      // TODO: throwing errors about 'map property of undefined'
       this.map?.loadImage(
         'http://localhost:4200/assets/icons/footprint1.png',
         function (this: any, error: any, image: any) {
@@ -155,252 +169,244 @@ export class MapComponent implements OnInit {
           });
         }
       );
+
+      
     });
 
-    //////////////////////////////////////////////
-    // show the coordinates at the mousepoint
-    this.map.on('mousemove', (e) => {
-      this.document.getElementById('info').innerHTML =
-        // e.lngLat is the longitude, latitude geographical position of the event
-        JSON.stringify(e.lngLat.wrap());
-    });
+    //   //////////////////////////////////////////////
+    //   // show the coordinates at the mousepoint
+    //   this.map.on('mousemove', (e) => {
+    //     this.document.getElementById('info').innerHTML =
+    //       // e.lngLat is the longitude, latitude geographical position of the event
+    //       JSON.stringify(e.lngLat.wrap());
+    //   });
+    // }
+
+    // //Code to detect changes in the tideHeight property binding.
+    // //When app.component sends a new tide height to this component, this code should run.
+    // ngOnChanges(changes: SimpleChanges) {
+
+    //           console.log('Changes detected trying to reload WMS');
+
+    //           let getMapRequest: string =
+    //             'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+    //           let sld_style: string = this.styleConstructor(this.tideHeight);
+    //           let fullRequest: string =
+    //             getMapRequest + '&STYLE_BODY=' + sld_style;
+    //           console.log(fullRequest);
+
+    //           this.map?.removeLayer('nidem_wms');
+    //           this.map?.removeSource('nidem');
+
+    //           this.map?.addSource('nidem', {
+    //             type: 'raster',
+    //             tiles: [fullRequest],
+    //           });
+
+    //           this.map?.addLayer({
+    //             id: 'nidem_wms',
+    //             type: 'raster',
+    //             source: 'nidem',
+    //             paint: {},
+    //           });
   }
+}
 
+// Do stuff when we click on the map
+// When a click event occurs on a feature in the places layer, open a popup at the
+// location of the feature, with description HTML from its properties.
+// map.on('click', 'poi', function (e) {
+//   var coordinates = e.features[0].geometry.coordinates[0][0].slice();
+//   var description = e.features[0].properties.description;
 
-  //Code to detect changes in the tideHeight property binding.
-  //When app.component sends a new tide height to this component, this code should run.
-  ngOnChanges(changes: SimpleChanges) {
-    
-            console.log('Changes detected trying to reload WMS');
+//   // Ensure that if the map is zoomed out such that multiple
+//   // copies of the feature are visible, the popup appears
+//   // over the copy being pointed to.
+//   while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+//   coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+//   }
 
-            let getMapRequest: string =
-              'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
-            let sld_style: string = this.styleConstructor(this.tideHeight);
-            let fullRequest: string =
-              getMapRequest + '&STYLE_BODY=' + sld_style;
-            console.log(fullRequest);
+//   new mapboxgl.Popup()
+//   .setLngLat(coordinates)
+//   .setHTML(description)
+//   .addTo(map);
+//   });
 
-            this.map?.removeLayer('nidem_wms');
-            this.map?.removeSource('nidem');
-            
-            this.map?.addSource('nidem', {
-              type: 'raster',
-              tiles: [fullRequest],
-            });
+//   // Change the cursor to a pointer when the mouse is over the places layer.
+//   map.on('mouseenter', 'places', function () {
+//   map.getCanvas().style.cursor = 'pointer';
+//   });
 
-            this.map?.addLayer({
-              id: 'nidem_wms',
-              type: 'raster',
-              source: 'nidem',
-              paint: {},
-            });
+//   // Change it back to a pointer when it leaves.
+//   map.on('mouseleave', 'places', function () {
+//   map.getCanvas().style.cursor = '';
+//   });
 
-            this.map?.addSource("nidemLegend", {"type": "image",
-            "url": "http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png",
-             "coordinates": [
-                [-80.425, 46.437],
-                [-71.516, 46.437],
-                [-71.516, 37.936],
-                [-80.425, 37.936]
-             ]})
-          }
-        }
+// NEXT, get each of the loaded features, add the names to a list, and emit them so they are available to other components
+// Modify this
+// Loop through each feature
+//         for (const feature of features) {
+//           const farmName = feature.getProperty('name');
+//           // get the feature geometry, which is of type google.maps.Data.Geometry
+//           // then typecast it to a google maps data polygon,
+//           // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
+//           // THIS DIDNT SEEM TO BE NECESSARY, AND LETS US DEAL WITH ALL SHAPE TYPES?
+//           const geometry = feature.getGeometry();
+//           geometry.forEachLatLng((LatLng) => {
+//             bbox.extend(LatLng);
+//           });
 
-  // Do stuff when we click on the map
-  // When a click event occurs on a feature in the places layer, open a popup at the
-  // location of the feature, with description HTML from its properties.
-  // map.on('click', 'poi', function (e) {
-  //   var coordinates = e.features[0].geometry.coordinates[0][0].slice();
-  //   var description = e.features[0].properties.description;
+//           farms.push({ farmName });
+//           console.log(farmName);
+//         }
 
-  //   // Ensure that if the map is zoomed out such that multiple
-  //   // copies of the feature are visible, the popup appears
-  //   // over the copy being pointed to.
-  //   while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-  //   coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-  //   }
+//         this.map?.fitBounds(bbox); // why the ?
+//         this.farmsChanged.emit(farms);
 
-  //   new mapboxgl.Popup()
-  //   .setLngLat(coordinates)
-  //   .setHTML(description)
-  //   .addTo(map);
-  //   });
+// /* TODO:
+// Get feature name and other attributes from the user, like in ArcGIS
+// Use the new attribute-form component, to let users enter a full range of attributes
+// The attribute field list should be extracted fromt he layer you are currently editing
+// And the form dynamically built
+// */
 
-  //   // Change the cursor to a pointer when the mouse is over the places layer.
-  //   map.on('mouseenter', 'places', function () {
-  //   map.getCanvas().style.cursor = 'pointer';
-  //   });
+// import { GoogleMapsAPIWrapper } from '@agm/core';
+// import { MVCArray } from '@agm/core/services/google-maps-types';
+// import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+// // import { debug } from 'console';
+// import { Farm } from 'src/app/models/Farm';
 
-  //   // Change it back to a pointer when it leaves.
-  //   map.on('mouseleave', 'places', function () {
-  //   map.getCanvas().style.cursor = '';
-  //   });
+// @Component({
+//   selector: 'app-map',
+//   templateUrl: './map.component.html',
+//   styleUrls: ['./map.component.scss'],
+// })
+// export class MapComponent implements OnInit {
+//   // Output decorator to link to other modules
+//   @Output() farmsChanged = new EventEmitter<Farm[]>();
 
-  // NEXT, get each of the loaded features, add the names to a list, and emit them so they are available to other components
-  // Modify this
-  // Loop through each feature
-  //         for (const feature of features) {
-  //           const farmName = feature.getProperty('name');
-  //           // get the feature geometry, which is of type google.maps.Data.Geometry
-  //           // then typecast it to a google maps data polygon,
-  //           // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
-  //           // THIS DIDNT SEEM TO BE NECESSARY, AND LETS US DEAL WITH ALL SHAPE TYPES?
-  //           const geometry = feature.getGeometry();
-  //           geometry.forEachLatLng((LatLng) => {
-  //             bbox.extend(LatLng);
-  //           });
+//   // Declare types
+//   map: google.maps.Map<Element> | undefined; // important to declare the type of property map, so we can refer to it with this.map
+//   drawingManager: google.maps.drawing.DrawingManager | undefined;
 
-  //           farms.push({ farmName });
-  //           console.log(farmName);
-  //         }
+//   // Constructor method. Not used...
+//   constructor() {}
 
-  //         this.map?.fitBounds(bbox); // why the ?
-  //         this.farmsChanged.emit(farms);
+//   // Angular built in that runs after everything else I think
+//   ngOnInit(): void {}
 
-  // /* TODO:
-  // Get feature name and other attributes from the user, like in ArcGIS
-  // Use the new attribute-form component, to let users enter a full range of attributes
-  // The attribute field list should be extracted fromt he layer you are currently editing
-  // And the form dynamically built
-  // */
+//   // This executes after the google map is fully initialised
+//   // Called by map.component.html when the (mapReady) event is emitted
+//   onMapReady(map: google.maps.Map) {
+//     const farms: Farm[] = [];
+//     this.map = map;
+//     this.map.setCenter({ lat: -32.91, lng: 117.133 });
+//     this.map.setZoom(11);
+//     this.map.setMapTypeId('satellite');
 
-  // import { GoogleMapsAPIWrapper } from '@agm/core';
-  // import { MVCArray } from '@agm/core/services/google-maps-types';
-  // import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-  // // import { debug } from 'console';
-  // import { Farm } from 'src/app/models/Farm';
+//     // Load the geojson and do stuff with the callback function
+//     // The callback function is invoked after all features are loaded, and has the features as a parameter
+//     this.map.data.loadGeoJson(
+//       'http://localhost:4200/assets/farms.geojson',
+//       {}, //options go here
+//       (features: google.maps.Data.Feature[]) => {
+//         const bbox = new google.maps.LatLngBounds();
 
-  // @Component({
-  //   selector: 'app-map',
-  //   templateUrl: './map.component.html',
-  //   styleUrls: ['./map.component.scss'],
-  // })
-  // export class MapComponent implements OnInit {
-  //   // Output decorator to link to other modules
-  //   @Output() farmsChanged = new EventEmitter<Farm[]>();
+//         // Loop through each feature
+//         for (const feature of features) {
+//           const farmName = feature.getProperty('name');
+//           // get the feature geometry, which is of type google.maps.Data.Geometry
+//           // then typecast it to a google maps data polygon,
+//           // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
+//           // THIS DIDNT SEEM TO BE NECESSARY, AND LETS US DEAL WITH ALL SHAPE TYPES?
+//           const geometry = feature.getGeometry();
+//           geometry.forEachLatLng((LatLng) => {
+//             bbox.extend(LatLng);
+//           });
 
-  //   // Declare types
-  //   map: google.maps.Map<Element> | undefined; // important to declare the type of property map, so we can refer to it with this.map
-  //   drawingManager: google.maps.drawing.DrawingManager | undefined;
+//           farms.push({ farmName });
+//           console.log(farmName);
+//         }
 
-  //   // Constructor method. Not used...
-  //   constructor() {}
+//         this.map?.fitBounds(bbox); // why the ?
+//         this.farmsChanged.emit(farms);
 
-  //   // Angular built in that runs after everything else I think
-  //   ngOnInit(): void {}
+//         // Style the polygons
+//         this.map?.data.setStyle({
+//           fillColor: 'red',
+//           strokeWeight: 1,
+//         });
+//       }
+//     );
 
-  //   // This executes after the google map is fully initialised
-  //   // Called by map.component.html when the (mapReady) event is emitted
-  //   onMapReady(map: google.maps.Map) {
-  //     const farms: Farm[] = [];
-  //     this.map = map;
-  //     this.map.setCenter({ lat: -32.91, lng: 117.133 });
-  //     this.map.setZoom(11);
-  //     this.map.setMapTypeId('satellite');
+//     // Setup the drawing manager
+//     this.drawingManager = new google.maps.drawing.DrawingManager({
+//       drawingControlOptions: {
+//         position: google.maps.ControlPosition.TOP_LEFT,
+//         drawingModes: [
+//           google.maps.drawing.OverlayType.MARKER,
+//           google.maps.drawing.OverlayType.POLYLINE,
+//           google.maps.drawing.OverlayType.POLYGON,
+//         ],
+//       }
+//     });
+//     this.drawingManager.setMap(map); //set the drawing manager to operate on our map object
 
-  //     // Load the geojson and do stuff with the callback function
-  //     // The callback function is invoked after all features are loaded, and has the features as a parameter
-  //     this.map.data.loadGeoJson(
-  //       'http://localhost:4200/assets/farms.geojson',
-  //       {}, //options go here
-  //       (features: google.maps.Data.Feature[]) => {
-  //         const bbox = new google.maps.LatLngBounds();
+//     // Setup the actions to perform after shapes are finished
+//     google.maps.event.addListener(
+//       this.drawingManager,
+//       'overlaycomplete',
+//       (event) => {
 
-  //         // Loop through each feature
-  //         for (const feature of features) {
-  //           const farmName = feature.getProperty('name');
-  //           // get the feature geometry, which is of type google.maps.Data.Geometry
-  //           // then typecast it to a google maps data polygon,
-  //           // const polygon = feature.getGeometry() as google.maps.Data.Polygon;
-  //           // THIS DIDNT SEEM TO BE NECESSARY, AND LETS US DEAL WITH ALL SHAPE TYPES?
-  //           const geometry = feature.getGeometry();
-  //           geometry.forEachLatLng((LatLng) => {
-  //             bbox.extend(LatLng);
-  //           });
+//         // remove overlay from the map
+//         event.overlay.setMap(null);
 
-  //           farms.push({ farmName });
-  //           console.log(farmName);
-  //         }
+//         // disable drawing manager
+//         this.drawingManager?.setDrawingMode(null);
 
-  //         this.map?.fitBounds(bbox); // why the ?
-  //         this.farmsChanged.emit(farms);
+//         // Get feature name from user
+//         const featureName: string = prompt('What is the name of the feature?');
 
-  //         // Style the polygons
-  //         this.map?.data.setStyle({
-  //           fillColor: 'red',
-  //           strokeWeight: 1,
-  //         });
-  //       }
-  //     );
+//         // Setup the variables that we need to scope both inside and ouside out case statements
+//         let feature: google.maps.Data.Feature;
+//         let geom: google.maps.Data.Geometry | undefined;  // this is the parent class of Point, Linestring, and Polygon
 
-  //     // Setup the drawing manager
-  //     this.drawingManager = new google.maps.drawing.DrawingManager({
-  //       drawingControlOptions: {
-  //         position: google.maps.ControlPosition.TOP_LEFT,
-  //         drawingModes: [
-  //           google.maps.drawing.OverlayType.MARKER,
-  //           google.maps.drawing.OverlayType.POLYLINE,
-  //           google.maps.drawing.OverlayType.POLYGON,
-  //         ],
-  //       }
-  //     });
-  //     this.drawingManager.setMap(map); //set the drawing manager to operate on our map object
+//         // Build a different google maps data object depending on the type of drawing we made
+//         switch (event.type) {
+//           case google.maps.drawing.OverlayType.MARKER:
+//             geom = new google.maps.Data.Point(event.overlay.getPosition());
+//           break;
 
-  //     // Setup the actions to perform after shapes are finished
-  //     google.maps.event.addListener(
-  //       this.drawingManager,
-  //       'overlaycomplete',
-  //       (event) => {
+//           case google.maps.drawing.OverlayType.POLYLINE:
+//             geom = new google.maps.Data.LineString(event.overlay.getPath().getArray());
+//           break;
 
-  //         // remove overlay from the map
-  //         event.overlay.setMap(null);
+//           case google.maps.drawing.OverlayType.POLYGON:
+//             geom = new google.maps.Data.Polygon([event.overlay.getPath().getArray()]);
+//           break;
 
-  //         // disable drawing manager
-  //         this.drawingManager?.setDrawingMode(null);
+//         }
 
-  //         // Get feature name from user
-  //         const featureName: string = prompt('What is the name of the feature?');
+//         // Build the feature and add to the map and TOC as long as we have one of the valid geometries
+//         if (geom) {
+//           // Build the feature
+//           feature = new google.maps.Data.Feature({
+//             geometry: geom,
+//             properties: {
+//               name: featureName
+//             }
+//           })
 
-  //         // Setup the variables that we need to scope both inside and ouside out case statements
-  //         let feature: google.maps.Data.Feature;
-  //         let geom: google.maps.Data.Geometry | undefined;  // this is the parent class of Point, Linestring, and Polygon
+//           // Add it to the map
+//           this.map?.data.add(feature);
 
-  //         // Build a different google maps data object depending on the type of drawing we made
-  //         switch (event.type) {
-  //           case google.maps.drawing.OverlayType.MARKER:
-  //             geom = new google.maps.Data.Point(event.overlay.getPosition());
-  //           break;
+//           // push the farm name to our list of feature names, which will be dynamically reflected in the sidebar component
+//           const farmName = feature.getProperty('name');
+//           farms.push({ farmName });
 
-  //           case google.maps.drawing.OverlayType.POLYLINE:
-  //             geom = new google.maps.Data.LineString(event.overlay.getPath().getArray());
-  //           break;
-
-  //           case google.maps.drawing.OverlayType.POLYGON:
-  //             geom = new google.maps.Data.Polygon([event.overlay.getPath().getArray()]);
-  //           break;
-
-  //         }
-
-  //         // Build the feature and add to the map and TOC as long as we have one of the valid geometries
-  //         if (geom) {
-  //           // Build the feature
-  //           feature = new google.maps.Data.Feature({
-  //             geometry: geom,
-  //             properties: {
-  //               name: featureName
-  //             }
-  //           })
-
-  //           // Add it to the map
-  //           this.map?.data.add(feature);
-
-  //           // push the farm name to our list of feature names, which will be dynamically reflected in the sidebar component
-  //           const farmName = feature.getProperty('name');
-  //           farms.push({ farmName });
-
-  //         } else {
-  //           console.log("Not a valid feature, not adding to TOC.")
-  //         }
-  //       }
-  //     );
-  //   }
+//         } else {
+//           console.log("Not a valid feature, not adding to TOC.")
+//         }
+//       }
+//     );
+//   }

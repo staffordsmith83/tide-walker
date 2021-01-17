@@ -1,0 +1,11 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /
+  static_files: dist/tide-walker/index.html
+  upload: dist/tide-walker/index.html
+
+- url: /
+  static_dir: dist/tide-walker
