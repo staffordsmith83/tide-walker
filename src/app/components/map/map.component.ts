@@ -47,9 +47,7 @@ export class MapComponent implements OnInit {
     // important to escape this to put in string.
     // important to put full workspace:layer name in the name tag of the sld xml!
     console.log('Map component thinks thide height is ' + this.tideHeight);
-    // debug;
     let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>NIDEM:NIDEM_mosaic<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
-    // let sldXmlTemplate: string = `<ColorMap type=\"intervals\" extended=\"true\">\r\n<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"0.5\"\/>\r\n<\/ColorMap>`;
 
     // encode the sld to be passed as a url, use encodeURIComponent to encode the ? characters especially
     let encodedStyle = encodeURIComponent(sldXmlTemplate);
@@ -172,42 +170,43 @@ export class MapComponent implements OnInit {
       });
     });
 
-    //   //////////////////////////////////////////////
-    //   // show the coordinates at the mousepoint
-    //   this.map.on('mousemove', (e) => {
-    //     this.document.getElementById('info').innerHTML =
-    //       // e.lngLat is the longitude, latitude geographical position of the event
-    //       JSON.stringify(e.lngLat.wrap());
-    //   });
-    // }
+      //////////////////////////////////////////////
+      // show the coordinates at the mousepoint
+      this.map.on('mousemove', (e) => {
+        this.document.getElementById('info').innerHTML =
+          // e.lngLat is the longitude, latitude geographical position of the event
+          JSON.stringify(e.lngLat.wrap());
+      });
+    }
 
-    // //Code to detect changes in the tideHeight property binding.
-    // //When app.component sends a new tide height to this component, this code should run.
-    // ngOnChanges(changes: SimpleChanges) {
+    //Code to detect changes in the tideHeight property binding.
+    //When app.component sends a new tide height to this component, this code should run.
+    ngOnChanges(changes: SimpleChanges) {
 
-    //           console.log('Changes detected trying to reload WMS');
+              console.log('Changes detected trying to reload WMS');
+              console.log(changes);
 
-    //           let getMapRequest: string =
-    //             'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
-    //           let sld_style: string = this.styleConstructor(this.tideHeight);
-    //           let fullRequest: string =
-    //             getMapRequest + '&STYLE_BODY=' + sld_style;
-    //           console.log(fullRequest);
+              let getMapRequest: string =
+                'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+              let sld_style: string = this.styleConstructor(this.tideHeight);
+              let fullRequest: string =
+                getMapRequest + '&STYLE_BODY=' + sld_style;
+              console.log(fullRequest);
 
-    //           this.map?.removeLayer('nidem_wms');
-    //           this.map?.removeSource('nidem');
+              this.map?.removeLayer('nidem_wms');
+              this.map?.removeSource('nidem');
 
-    //           this.map?.addSource('nidem', {
-    //             type: 'raster',
-    //             tiles: [fullRequest],
-    //           });
+              this.map?.addSource('nidem', {
+                type: 'raster',
+                tiles: [fullRequest],
+              });
 
-    //           this.map?.addLayer({
-    //             id: 'nidem_wms',
-    //             type: 'raster',
-    //             source: 'nidem',
-    //             paint: {},
-    //           });
+              this.map?.addLayer({
+                id: 'nidem_wms',
+                type: 'raster',
+                source: 'nidem',
+                paint: {},
+              });
   }
 }
 
