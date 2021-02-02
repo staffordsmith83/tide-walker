@@ -17,6 +17,8 @@ import { TideInputBasicComponent } from './components/tide-input-basic/tide-inpu
 import { DataService } from './services/data.service';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { MatListModule } from '@angular/material/list';
+
 
 @NgModule({
   imports: [
@@ -29,7 +31,9 @@ import { FormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    MatButtonModule,
+    MatListModule
   ],
   providers: [DataService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],

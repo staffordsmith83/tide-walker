@@ -21,6 +21,8 @@ import { stringify } from '@angular/compiler/src/util';
 import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
 import { debug } from 'console';
+import { TideInputBasicComponent } from '../tide-input-basic/tide-input-basic.component';
+import { MessageService } from 'src/app/_services/index';
 
 @Component({
   selector: 'app-map',
@@ -32,7 +34,7 @@ export class MapComponent implements OnInit {
   // @Output() poiChanged = new EventEmitter<Farm[]>();
 
   // THIS PART NOT WORKING - it messe up the geoserver request.
-  @Input() tideHeight = '-5';
+  tideHeight = '-5';
   // tideHeight = "0";
 
   map: mapboxgl.Map | undefined;
@@ -40,7 +42,43 @@ export class MapComponent implements OnInit {
   lng = 122.26865;
   fullRequest = '';
 
-  constructor(@Inject(DOCUMENT) private document: Document) {}
+  messages: any[] = [];
+  subscription: Subscription;
+
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    private messageService: MessageService
+  ) {
+    //Code to detect changes in the tideHeight property binding.
+    //When app.component sends a new tide height to this component, this code should run.
+    // subscribe to home component messages
+    this.subscription = this.messageService
+      .getMessage()
+      .subscribe((message) => {
+        if (message) {
+          this.tideHeight = message.text;
+          console.log('Map component received message :' + message.text);
+          // Run teh update method!!!!
+          this.updateWms();
+        } else {
+          // clear messages when empty message received
+          this.tideHeight = '0.0';
+        }
+      });
+
+    // // subscribe to home component messages
+    // this.subscription = this.messageService
+    //   .getMessage()
+    //   .subscribe((message) => {
+    //     if (message) {
+    //       this.messages.push(message);
+    //       console.log(this.messages);
+    //     } else {
+    //       // clear messages when empty message received
+    //       this.messages = [];
+    //     }
+    //   });
+  }
 
   styleConstructor(tideHeight: string) {
     // insert the tideHeight into the following string, which is a full sld style file as a string
@@ -55,8 +93,46 @@ export class MapComponent implements OnInit {
     return encodedStyle;
   }
 
+  updateWms() {
+    /////////////////////////////////
+    // RUN THIS SECTION WHEN OBSERVABLE CHANGES
+    console.log('Changes detected trying to reload WMS');
+
+    let getMapRequest: string =
+      'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+    let sld_style: string = this.styleConstructor(this.tideHeight);
+    let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
+    console.log(fullRequest);
+
+    this.map?.removeLayer('nidem_wms');
+    this.map?.removeSource('nidem');
+
+    this.map?.addSource('nidem', {
+      type: 'raster',
+      tiles: [fullRequest],
+    });
+
+    this.map?.addLayer({
+      id: 'nidem_wms',
+      type: 'raster',
+      source: 'nidem',
+      paint: {},
+    });
+  }
+
   ngOnInit() {
     // mapboxgl.accessToken = environment.mapbox.accessToken;
+
+    // Execute the Observable and print the
+    // result of each notification
+    // next() is a call to countOnetoTen method
+    // to get the next value from the observable
+
+    // TideInputBasicComponent.tideHeight.subscribe({
+    //   next(num) {
+    //     console.log(num);
+    //   },
+    // });
 
     this.map = new mapboxgl.Map({
       container: 'map',
@@ -170,43 +246,13 @@ export class MapComponent implements OnInit {
       });
     });
 
-      //////////////////////////////////////////////
-      // show the coordinates at the mousepoint
-      this.map.on('mousemove', (e) => {
-        this.document.getElementById('info').innerHTML =
-          // e.lngLat is the longitude, latitude geographical position of the event
-          JSON.stringify(e.lngLat.wrap());
-      });
-    }
-
-    //Code to detect changes in the tideHeight property binding.
-    //When app.component sends a new tide height to this component, this code should run.
-    ngOnChanges(changes: SimpleChanges) {
-
-              console.log('Changes detected trying to reload WMS');
-              console.log(changes);
-
-              let getMapRequest: string =
-                'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
-              let sld_style: string = this.styleConstructor(this.tideHeight);
-              let fullRequest: string =
-                getMapRequest + '&STYLE_BODY=' + sld_style;
-              console.log(fullRequest);
-
-              this.map?.removeLayer('nidem_wms');
-              this.map?.removeSource('nidem');
-
-              this.map?.addSource('nidem', {
-                type: 'raster',
-                tiles: [fullRequest],
-              });
-
-              this.map?.addLayer({
-                id: 'nidem_wms',
-                type: 'raster',
-                source: 'nidem',
-                paint: {},
-              });
+    //////////////////////////////////////////////
+    // show the coordinates at the mousepoint
+    this.map.on('mousemove', (e) => {
+      this.document.getElementById('info').innerHTML =
+        // e.lngLat is the longitude, latitude geographical position of the event
+        JSON.stringify(e.lngLat.wrap());
+    });
   }
 }
 

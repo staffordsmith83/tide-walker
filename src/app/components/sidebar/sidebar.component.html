@@ -1,7 +1,19 @@
-<ul>
-    <li *ngFor="let farm of farms">
-        {{farm.farmName}}
-    </li>
-</ul>
+<span>Tide Values List:</span>
+<mat-list role="list">
+    <mat-list-item 
+        role="listitem" 
+        *ngFor="let message of messages"
+        style="color:black;">{{message.text}}</mat-list-item>
 
-<button mat-raised-button color="primary" (click)="onButtonCLicked()">Primary</button>
+  </mat-list>
+
+<!-- 
+<ul>
+    <li *ngFor="let message of messages" class="alert alert-success">{{message.text}}</li>
+
+</ul> -->
+
+<button 
+    *ngIf="messages?.length > 0"
+    mat-raised-button color="primary" 
+    (click)="onButtonClicked()">Clear History</button>
