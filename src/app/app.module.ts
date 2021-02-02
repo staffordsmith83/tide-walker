@@ -18,6 +18,8 @@ import { DataService } from './services/data.service';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
+import { CalculationsService } from './services/calculations.service';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -33,9 +35,10 @@ import { MatListModule } from '@angular/material/list';
     MatInputModule,
     FormsModule,
     MatButtonModule,
-    MatListModule
+    MatListModule,
+    HttpClientModule
   ],
-  providers: [DataService],
+  providers: [DataService, CalculationsService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })

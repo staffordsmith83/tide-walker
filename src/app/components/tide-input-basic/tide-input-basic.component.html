@@ -1,24 +1,43 @@
 <div class="user-input-container">
-  
-<button mat-button (click)="sendMessage()" class="btn btn-primary">Send Tide Value</button>
-<button mat-button (click)="clearMessages()" class="btn btn-secondary">Clear Tides</button>  
-  
   <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
-      <!-- <mat-label>Enter tide height</mat-label> -->
-      <input 
-        matInput #input maxlength="10" 
-        [placeholder]="placeholderText"
-        [(ngModel)]='newTideHeight'
-        (keydown.enter)="sendMessage()">
-      <mat-hint align="end">{{input.value?.length || 0}}/10</mat-hint>
-    </mat-form-field>
-    <!-- <p>{{ userTideHeight }}</p> -->
-  
-    <!-- <mat-form-field appearance="fill">
+    <!-- <mat-label>Enter tide height</mat-label> -->
+    <input
+      matInput
+      #input
+      maxlength="10"
+      [placeholder]="'unixEpochText'"
+      [(ngModel)]="newDateTime"
+      (keydown.enter)="calculateTide(newDateTime)"
+    />
+    <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
+  </mat-form-field>
+
+  <button mat-button (click)="sendMessage()" class="btn btn-primary">
+    Calculate Tide Height
+  </button>
+  <button mat-button (click)="clearMessages()" class="btn btn-secondary">
+    Clear Tides
+  </button>
+
+  <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
+    <!-- <mat-label>Enter tide height</mat-label> -->
+    <input
+      matInput
+      #input
+      maxlength="10"
+      [placeholder]="placeholderText"
+      [(ngModel)]="newTideHeight"
+      (keydown.enter)="sendMessage()"
+    />
+    <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
+  </mat-form-field>
+  <!-- <p>{{ userTideHeight }}</p> -->
+
+  <!-- <mat-form-field appearance="fill">
       <mat-label>Select me</mat-label>
       <mat-select>
         <mat-option value="option">Option</mat-option>
       </mat-select>
       <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
     </mat-form-field> -->
-  </div>
+</div>
