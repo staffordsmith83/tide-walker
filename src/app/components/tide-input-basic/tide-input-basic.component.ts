@@ -25,7 +25,7 @@ import { HttpClientModule } from '@angular/common/http';
 export class TideInputBasicComponent implements OnInit {
   //set the custom event
   @Output() tideUpdated = new EventEmitter<string>(); //Maybe unecessary???? Or maybe newTideHeight updater method is unecessary?
-  newTideHeight = '';
+  newTideHeight = '0.0';
   newDateTime: number = 1612612330;
   hintLabelText: string = 'Enter a decimal value from -10.0 to 10.0';
   placeholderText: string = 'enter tide height';
@@ -33,7 +33,7 @@ export class TideInputBasicComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private CalculationsService: CalculationsService
+    private calculationsService: CalculationsService
   ) {}
 
   onTideUpdated() {
@@ -43,10 +43,10 @@ export class TideInputBasicComponent implements OnInit {
   ngOnInit() {}
 
   calculateTide(dateTime: number ): void {
-    console.log("Sending Epoch Time to Calculations Service: " + dateTime);    
-    let tideCalculated = this.CalculationsService.getHeightFromDateTime(
-      dateTime
-    );
+    // console.log("Sending Epoch Time to Calculations Service: " + dateTime);    
+    let tideCalculated = this.calculationsService.getHeightFromDateTime(dateTime).subscribe(tideHeight => {
+      this.newTideHeight = tideHeight.toString();
+    });
     // PROBLEM: Service gets the return value before the call has been finished in the service...
     // How can I make this calling component wait for the response from the Service before it shows the value?
     
@@ -63,15 +63,4 @@ export class TideInputBasicComponent implements OnInit {
     this.messageService.clearMessages();
   }
 
-  // ngOnInit() {
-  //   this.subscription = this.data.currentMessage.subscribe(message => this.message = message)
-  // }
-
-  // ngOnDestroy() {
-  //   this.subscription.unsubscribe();
-  // }
-
-  // newMessage() {
-  //   this.data.changeMessage("Hello from Sibling")
-  // }
 }

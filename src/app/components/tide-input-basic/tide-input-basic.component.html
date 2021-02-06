@@ -1,4 +1,7 @@
+<!-- Issues: keydown.enter on epochtime field triggers the sendMessage event but it sends the Old tide height not the new one... -->
+
 <div class="user-input-container">
+  <mat-label>Datetime:</mat-label>
   <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
     <!-- <mat-label>Enter tide height</mat-label> -->
     <input
@@ -7,20 +10,21 @@
       maxlength="10"
       [placeholder]="'unixEpochText'"
       [(ngModel)]="newDateTime"
-      (keydown.enter)="calculateTide(newDateTime)"
+      (keydown.enter)="calculateTide(newDateTime); sendMessage()"
     />
     <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
   </mat-form-field>
-
+  <!-- 
   <button mat-button (click)="sendMessage()" class="btn btn-primary">
     Calculate Tide Height
   </button>
   <button mat-button (click)="clearMessages()" class="btn btn-secondary">
     Clear Tides
-  </button>
+  </button> -->
 
+  <mat-label>Tideheight:</mat-label>
   <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
-    <!-- <mat-label>Enter tide height</mat-label> -->
+
     <input
       matInput
       #input

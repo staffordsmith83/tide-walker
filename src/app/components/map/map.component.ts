@@ -23,6 +23,7 @@ import { Subscription } from 'rxjs';
 import { debug } from 'console';
 import { TideInputBasicComponent } from '../tide-input-basic/tide-input-basic.component';
 import { MessageService } from 'src/app/_services/index';
+import { CalculationsService } from 'src/app/services/calculations.service';
 
 @Component({
   selector: 'app-map',
@@ -47,7 +48,8 @@ export class MapComponent implements OnInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private calculationsService: CalculationsService
   ) {
     //Code to detect changes in the tideHeight property binding.
     //When app.component sends a new tide height to this component, this code should run.
