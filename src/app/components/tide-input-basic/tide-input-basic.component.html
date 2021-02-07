@@ -10,7 +10,7 @@
       maxlength="10"
       [placeholder]="'unixEpochText'"
       [(ngModel)]="newDateTime"
-      (keydown.enter)="calculateTide(newDateTime); sendMessage()"
+      (keydown.enter)="calculateTide(newDateTime)"
     />
     <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
   </mat-form-field>
@@ -31,7 +31,7 @@
       maxlength="10"
       [placeholder]="placeholderText"
       [(ngModel)]="newTideHeight"
-      (keydown.enter)="sendMessage()"
+      (keydown.enter)="onTideUpdated(newTideHeight); resetDateTime()"
     />
     <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
   </mat-form-field>

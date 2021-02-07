@@ -20,10 +20,9 @@ import { stringify } from '@angular/compiler/src/util';
 
 import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
-import { debug } from 'console';
 import { TideInputBasicComponent } from '../tide-input-basic/tide-input-basic.component';
 import { MessageService } from 'src/app/_services/index';
-import { CalculationsService } from 'src/app/services/calculations.service';
+import { TidesService } from 'src/app/services/calculations.service';
 
 @Component({
   selector: 'app-map',
@@ -31,111 +30,57 @@ import { CalculationsService } from 'src/app/services/calculations.service';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit {
-  // Output decorator to link to other modules
-  // @Output() poiChanged = new EventEmitter<Farm[]>();
-
-  // THIS PART NOT WORKING - it messe up the geoserver request.
+  // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
   tideHeight = '-5';
-  // tideHeight = "0";
 
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
-  fullRequest = '';
 
   messages: any[] = [];
-  subscription: Subscription;
+  // subscription: Subscription | any; // HOW TO remove this 'any' flag without throwing 'has no initializer and is not definitely assigned in the constructor' error
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private messageService: MessageService,
-    private calculationsService: CalculationsService
-  ) {
+    private tidesService: TidesService
+  ) {}
+
+  ngOnInit() {
+    // subscribe to tideHeightObs Subject
+    this.tidesService.getTideHeightObs().subscribe((tideHeight) => {
+      this.tideHeight = tideHeight.toString();
+      this.updateWms();
+    });
+    this.initialiseMap();
+    this.setupMapFunctionality();
+
     //Code to detect changes in the tideHeight property binding.
     //When app.component sends a new tide height to this component, this code should run.
     // subscribe to home component messages
-    this.subscription = this.messageService
-      .getMessage()
-      .subscribe((message) => {
-        if (message) {
-          this.tideHeight = message.text;
-          console.log('Map component received message :' + message.text);
-          // Run teh update method!!!!
-          this.updateWms();
-        } else {
-          // clear messages when empty message received
-          this.tideHeight = '0.0';
-        }
-      });
 
-    // // subscribe to home component messages
+    ///////////////////
+    // CURRENTLY WE ARE SUBSCRIBING TO AN OBSERVABLE THAT EXISTS IN TIDE INPUT COMPONENT.
+    // We actually want to subscribe to a SUBJECT in Calcualtions Service.
+
     // this.subscription = this.messageService
     //   .getMessage()
     //   .subscribe((message) => {
     //     if (message) {
-    //       this.messages.push(message);
-    //       console.log(this.messages);
+    //       this.tideHeight = message.text;
+    //       console.log('Map component received message :' + message.text);
+    //       // Run teh update method!!!!
+    //       this.updateWms();
     //     } else {
     //       // clear messages when empty message received
-    //       this.messages = [];
+    //       this.tideHeight = '0.0';
     //     }
     //   });
   }
 
-  styleConstructor(tideHeight: string) {
-    // insert the tideHeight into the following string, which is a full sld style file as a string
-    // important to escape this to put in string.
-    // important to put full workspace:layer name in the name tag of the sld xml!
-    console.log('Map component thinks thide height is ' + this.tideHeight);
-    let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>NIDEM:NIDEM_mosaic<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
 
-    // encode the sld to be passed as a url, use encodeURIComponent to encode the ? characters especially
-    let encodedStyle = encodeURIComponent(sldXmlTemplate);
-
-    return encodedStyle;
-  }
-
-  updateWms() {
-    /////////////////////////////////
-    // RUN THIS SECTION WHEN OBSERVABLE CHANGES
-    console.log('Changes detected trying to reload WMS');
-
-    let getMapRequest: string =
-      'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
-    let sld_style: string = this.styleConstructor(this.tideHeight);
-    let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
-    console.log(fullRequest);
-
-    this.map?.removeLayer('nidem_wms');
-    this.map?.removeSource('nidem');
-
-    this.map?.addSource('nidem', {
-      type: 'raster',
-      tiles: [fullRequest],
-    });
-
-    this.map?.addLayer({
-      id: 'nidem_wms',
-      type: 'raster',
-      source: 'nidem',
-      paint: {},
-    });
-  }
-
-  ngOnInit() {
-    // mapboxgl.accessToken = environment.mapbox.accessToken;
-
-    // Execute the Observable and print the
-    // result of each notification
-    // next() is a call to countOnetoTen method
-    // to get the next value from the observable
-
-    // TideInputBasicComponent.tideHeight.subscribe({
-    //   next(num) {
-    //     console.log(num);
-    //   },
-    // });
-
+  initialiseMap() {
+    //  Initialise the Map
     this.map = new mapboxgl.Map({
       container: 'map',
       style: {
@@ -175,12 +120,14 @@ export class MapComponent implements OnInit {
         trackUserLocation: true,
       })
     );
+  }
 
+  setupMapFunctionality() {
     ////////////////////////////////////////////////////////////////////////////////////////
     // EVENT DRIVEN BEHAVIOURS
 
     // Add the NIDEM WMS layer
-    this.map.on('load', () => {
+    this.map?.on('load', () => {
       let getMapRequest: string =
         'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
       let sld_style: string = this.styleConstructor(this.tideHeight);
@@ -250,10 +197,50 @@ export class MapComponent implements OnInit {
 
     //////////////////////////////////////////////
     // show the coordinates at the mousepoint
-    this.map.on('mousemove', (e) => {
+    this.map?.on('mousemove', (e) => {
       this.document.getElementById('info').innerHTML =
         // e.lngLat is the longitude, latitude geographical position of the event
         JSON.stringify(e.lngLat.wrap());
+    });
+  }
+
+  styleConstructor(tideHeight: string) {
+    // insert the tideHeight into the following string, which is a full sld style file as a string
+    // important to escape this to put in string.
+    // important to put full workspace:layer name in the name tag of the sld xml!
+    console.log('Map component thinks thide height is ' + this.tideHeight);
+    let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>NIDEM:NIDEM_mosaic<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
+
+    // encode the sld to be passed as a url, use encodeURIComponent to encode the ? characters especially
+    let encodedStyle = encodeURIComponent(sldXmlTemplate);
+
+    return encodedStyle;
+  }
+
+  updateWms() {
+    /////////////////////////////////
+    // RUN THIS SECTION WHEN OBSERVABLE CHANGES
+    console.log('Changes detected trying to reload WMS');
+
+    let getMapRequest: string =
+      'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+    let sld_style: string = this.styleConstructor(this.tideHeight);
+    let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
+    console.log(fullRequest);
+
+    this.map?.removeLayer('nidem_wms');
+    this.map?.removeSource('nidem');
+
+    this.map?.addSource('nidem', {
+      type: 'raster',
+      tiles: [fullRequest],
+    });
+
+    this.map?.addLayer({
+      id: 'nidem_wms',
+      type: 'raster',
+      source: 'nidem',
+      paint: {},
     });
   }
 }

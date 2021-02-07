@@ -7,15 +7,11 @@ import {
   EventEmitter,
   Input,
 } from '@angular/core';
-import { FileDetector } from 'protractor';
-import { DataService } from 'src/app/services/data.service';
-import { Subscription, Observable, Observer } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MessageService } from 'src/app/_services/index';
 import { MatButtonModule } from '@angular/material/button';
-import { CalculationsService } from 'src/app/services/calculations.service';
-import { HttpClientModule } from '@angular/common/http';
+import { TidesService } from 'src/app/services/calculations.service';
 
 @Component({
   selector: 'app-tide-input-basic',
@@ -23,9 +19,8 @@ import { HttpClientModule } from '@angular/common/http';
   styleUrls: ['./tide-input-basic.component.scss'],
 })
 export class TideInputBasicComponent implements OnInit {
-  //set the custom event
   @Output() tideUpdated = new EventEmitter<string>(); //Maybe unecessary???? Or maybe newTideHeight updater method is unecessary?
-  newTideHeight = '0.0';
+  newTideHeight: string = '';
   newDateTime: number = 1612612330;
   hintLabelText: string = 'Enter a decimal value from -10.0 to 10.0';
   placeholderText: string = 'enter tide height';
@@ -33,24 +28,28 @@ export class TideInputBasicComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private calculationsService: CalculationsService
+    private tidesService: TidesService
   ) {}
 
-  onTideUpdated() {
-    this.tideUpdated.emit(this.newTideHeight);
+  ngOnInit() {
+    // subscribe to tideHeightObs Subject
+    this.tidesService
+      .getTideHeightObs()
+      .subscribe((tideHeight) => (this.newTideHeight = tideHeight.toString()));
   }
 
-  ngOnInit() {}
+  onTideUpdated(tideHeight: string) {
+    // this.tideUpdated.emit(this.newTideHeight);
+    this.tidesService.setTideHeightObs(+tideHeight); // + operator casts the string to a number
+  }
 
-  calculateTide(dateTime: number ): void {
-    // console.log("Sending Epoch Time to Calculations Service: " + dateTime);    
-    let tideCalculated = this.calculationsService.getHeightFromDateTime(dateTime).subscribe(tideHeight => {
-      this.newTideHeight = tideHeight.toString();
-    });
-    // PROBLEM: Service gets the return value before the call has been finished in the service...
-    // How can I make this calling component wait for the response from the Service before it shows the value?
-    
-    console.log("Received from Service: " + tideCalculated);
+  resetDateTime() {
+    this.newDateTime = 0;
+  }
+
+  calculateTide(dateTime: number): void {
+    // Prompt the tides service to recalculate the global tideHeight variable
+    this.tidesService.getHeightFromDateTime(dateTime);
   }
 
   sendMessage(): void {
@@ -62,5 +61,4 @@ export class TideInputBasicComponent implements OnInit {
     // clear messages
     this.messageService.clearMessages();
   }
-
 }

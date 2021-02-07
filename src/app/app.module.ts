@@ -18,7 +18,7 @@ import { DataService } from './services/data.service';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
-import { CalculationsService } from './services/calculations.service';
+import { TidesService } from './services/calculations.service';
 import { HttpClientModule } from '@angular/common/http';
 
 
@@ -38,7 +38,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatListModule,
     HttpClientModule
   ],
-  providers: [DataService, CalculationsService],
+  providers: [DataService, TidesService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })
