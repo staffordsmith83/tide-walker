@@ -28,8 +28,6 @@ export class TidesService implements OnInit, OnDestroy {
   }
 
   getHeightFromDateTime(dateTime: number) {
-    // Best solution, make tideHeight a subject, and subscribe to it in all components that need it.
-    // let tideHeight: number;
     let response: Observable<any>;
     let request: string = this.requestHeader + dateTime.toString();
     console.log(
@@ -38,10 +36,6 @@ export class TidesService implements OnInit, OnDestroy {
 
     // the pipe method filters out all other data and returns only the first height value.
     // Could change to get range of heights, or return JSON with tide station and other metadata and process later...
-
-    // NB: next block we return the observable. If we are going to use a Subject insted, get rid of the return keyword in the next line...
-    // Also we would uncomment the .subscribe method.
-    // So what we are doing here is returning the observable... so that we can then subscribe to it in external components!
     this.apiSubscription = this.http
       .get<WorldTidesResponse>(request)
       .pipe(

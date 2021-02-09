@@ -1,11 +1,6 @@
 <div class="app-container" fxLayout="column">
-  <!-- <div class="toolbar">
-    <h1>Simple Google Maps Application</h1>
-  </div> -->
-
   <mat-toolbar>
     <span>Tide Walker</span>
-    <!-- <span>Tide Height {{ tideHeight }}</span> -->
     <span fxFlex></span>
     <app-tide-input-basic (tideUpdated)="onNewTideReceived($event)">
     </app-tide-input-basic>
@@ -14,7 +9,7 @@
     </button>
   </mat-toolbar>
 
-  <!-- WHad to set fxFlex to 90% in next line to prevent map being larger than page... -->
+  <!-- Had to set fxFlex to 90% in next line to prevent map being larger than page... -->
   <div class="main" fxLayout="row" fxFlex="90%">
     <div class="sidebar">
       <app-sidebar></app-sidebar>

@@ -1,9 +1,6 @@
-<!-- Issues: keydown.enter on epochtime field triggers the sendMessage event but it sends the Old tide height not the new one... -->
-
 <div class="user-input-container">
   <mat-label>Datetime:</mat-label>
-  <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
-    <!-- <mat-label>Enter tide height</mat-label> -->
+  <mat-form-field appearance="fill">
     <input
       matInput
       #input
@@ -14,34 +11,17 @@
     />
     <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
   </mat-form-field>
-  <!-- 
-  <button mat-button (click)="sendMessage()" class="btn btn-primary">
-    Calculate Tide Height
-  </button>
-  <button mat-button (click)="clearMessages()" class="btn btn-secondary">
-    Clear Tides
-  </button> -->
 
   <mat-label>Tideheight:</mat-label>
-  <mat-form-field [hintLabel]="hintLabelText" appearance="fill">
-
+  <mat-form-field appearance="fill">
     <input
       matInput
       #input
       maxlength="10"
-      [placeholder]="placeholderText"
-      [(ngModel)]="newTideHeight"
-      (keydown.enter)="onTideUpdated(newTideHeight); resetDateTime()"
+      placeholder="'enter tide height'"
+      [(ngModel)]="tideHeight"
+      (keydown.enter)="onTideUpdated(tideHeight); resetDateTime()"
     />
     <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
   </mat-form-field>
-  <!-- <p>{{ userTideHeight }}</p> -->
-
-  <!-- <mat-form-field appearance="fill">
-      <mat-label>Select me</mat-label>
-      <mat-select>
-        <mat-option value="option">Option</mat-option>
-      </mat-select>
-      <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
-    </mat-form-field> -->
 </div>

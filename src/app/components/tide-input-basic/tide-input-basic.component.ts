@@ -4,12 +4,9 @@ import {
   OnDestroy,
   OnInit,
   EventEmitter,
-  Input,
 } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+
 import { MessageService } from 'src/app/_services/index';
-import { MatButtonModule } from '@angular/material/button';
 import { TidesService } from 'src/app/services/tides.service';
 import { Subscription } from 'rxjs';
 
@@ -20,11 +17,8 @@ import { Subscription } from 'rxjs';
 })
 export class TideInputBasicComponent implements OnInit, OnDestroy {
   @Output() tideUpdated = new EventEmitter<string>(); //Maybe unecessary???? Or maybe newTideHeight updater method is unecessary?
-  newTideHeight: string = '';
+  tideHeight: string = '';
   newDateTime: number = 1612612330;
-  hintLabelText: string = 'Enter a decimal value from -10.0 to 10.0';
-  placeholderText: string = 'enter tide height';
-  @Input() matDatepicker: Date | undefined;
   private tidesSubscription: Subscription;
 
   constructor(
@@ -36,11 +30,10 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
     // subscribe to tideHeightObs Subject
     this.tidesService
       .getTideHeightObs()
-      .subscribe((tideHeight) => (this.newTideHeight = tideHeight.toString()));
+      .subscribe((tideHeight) => (this.tideHeight = tideHeight.toString()));
   }
 
   onTideUpdated(tideHeight: string) {
-
     // ANOTHER APPROACH - could call this.tidesService.tideHeightObs$.next(+tideHeight)
     // This is because with Subjects you can call next from outside. What approach is better? This way I am keeping the actual Subject attribute of the TidesService private... Dunno.
     this.tidesService.setTideHeightObs(+tideHeight); // + operator casts the string to a number
@@ -57,7 +50,7 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
 
   sendMessage(): void {
     // send message to subscribers via observable subject
-    this.messageService.sendMessage(this.newTideHeight);
+    this.messageService.sendMessage(this.tideHeight);
   }
 
   clearMessages(): void {

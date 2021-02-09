@@ -1,19 +1,18 @@
 <span>Tide Values List:</span>
 <mat-list role="list">
-    <mat-list-item 
-        role="listitem" 
-        *ngFor="let message of messages"
-        style="color:black;">{{message}}</mat-list-item>
+  <mat-list-item
+    role="listitem"
+    *ngFor="let tide of tidesHistory"
+    style="color: black"
+    >{{ tide }}</mat-list-item
+  >
+</mat-list>
 
-  </mat-list>
-
-<!-- 
-<ul>
-    <li *ngFor="let message of messages" class="alert alert-success">{{message.text}}</li>
-
-</ul> -->
-
-<button 
-    *ngIf="messages?.length > 0"
-    mat-raised-button color="primary" 
-    (click)="onButtonClicked()">Clear History</button>
+<button
+  *ngIf="tidesHistory?.length > 0"
+  mat-raised-button
+  color="primary"
+  (click)="onButtonClicked()"
+>
+  Clear History
+</button>
