@@ -3,7 +3,6 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  AfterContentInit,
   EventEmitter,
   Input,
 } from '@angular/core';
@@ -12,19 +11,21 @@ import { MatInputModule } from '@angular/material/input';
 import { MessageService } from 'src/app/_services/index';
 import { MatButtonModule } from '@angular/material/button';
 import { TidesService } from 'src/app/services/tides.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tide-input-basic',
   templateUrl: './tide-input-basic.component.html',
   styleUrls: ['./tide-input-basic.component.scss'],
 })
-export class TideInputBasicComponent implements OnInit {
+export class TideInputBasicComponent implements OnInit, OnDestroy {
   @Output() tideUpdated = new EventEmitter<string>(); //Maybe unecessary???? Or maybe newTideHeight updater method is unecessary?
   newTideHeight: string = '';
   newDateTime: number = 1612612330;
   hintLabelText: string = 'Enter a decimal value from -10.0 to 10.0';
   placeholderText: string = 'enter tide height';
   @Input() matDatepicker: Date | undefined;
+  private tidesSubscription: Subscription;
 
   constructor(
     private messageService: MessageService,
@@ -62,5 +63,9 @@ export class TideInputBasicComponent implements OnInit {
   clearMessages(): void {
     // clear messages
     this.messageService.clearMessages();
+  }
+
+  ngOnDestroy() {
+    this.tidesSubscription.unsubscribe();
   }
 }

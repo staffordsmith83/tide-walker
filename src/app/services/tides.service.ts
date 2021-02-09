@@ -1,21 +1,23 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TidesService {
+export class TidesService implements OnInit, OnDestroy {
   worldTidesApiKey = '3c2d3af9-c54c-42cf-8366-9cd62931d8d5';
   requestHeader = `https://www.worldtides.info/api/v2?heights&lat=-18.061&lon=122.369&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
   tideHeight: number = 999999;
-  
   // If there are problems with this, may need to reimplement it as a BehaviourSubject and hold an initial value of 0.0 or something.
-  private tideHeightObs$: Subject<number> = new Subject; // start with default value of 0.0? Thats only for Behaviour Subjects.
+  private tideHeightObs$: Subject<number> = new Subject(); // start with default value of 0.0? Thats only for Behaviour Subjects.
+  apiSubscription: Subscription;
 
   constructor(private http: HttpClient) {}
+
+  ngOnInit() {}
 
   getTideHeightObs(): Observable<number> {
     return this.tideHeightObs$.asObservable();
@@ -24,9 +26,6 @@ export class TidesService {
   setTideHeightObs(tideHeight: number) {
     this.tideHeightObs$.next(tideHeight);
   }
-
-  // TODO: also return station name that observation is from. Display to user.
-  getNearestTideStation() {}
 
   getHeightFromDateTime(dateTime: number) {
     // Best solution, make tideHeight a subject, and subscribe to it in all components that need it.
@@ -43,7 +42,7 @@ export class TidesService {
     // NB: next block we return the observable. If we are going to use a Subject insted, get rid of the return keyword in the next line...
     // Also we would uncomment the .subscribe method.
     // So what we are doing here is returning the observable... so that we can then subscribe to it in external components!
-    this.http
+    this.apiSubscription = this.http
       .get<WorldTidesResponse>(request)
       .pipe(
         map((responseData) => {
@@ -57,5 +56,12 @@ export class TidesService {
       });
 
     console.log(request);
+  }
+
+  // TODO: also return station name that observation is from. Display to user.
+  // getNearestTideStation() {}
+
+  ngOnDestroy() {
+    this.apiSubscription.unsubscribe();
   }
 }

@@ -16,11 +16,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // Because we are getting farms from the map component, sending it to the parent
   // And then this component accesses it from the parent!
   messages: any[] = [];
-  subscription: Subscription;
+  tidesSubscription: Subscription;
 
   constructor(private messageService: MessageService, private tidesService: TidesService) {
     // subscribe to tideHeightObs Subject
-    this.subscription = this.tidesService.getTideHeightObs().subscribe((tideHeight) => {
+    this.tidesSubscription = this.tidesService.getTideHeightObs().subscribe((tideHeight) => {
       this.messages.push(tideHeight.toString());
     });
   }
@@ -29,7 +29,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // unsubscribe to ensure no memory leaks
-    this.subscription.unsubscribe();
+    this.tidesSubscription.unsubscribe();
   }
 
   onButtonClicked() {
