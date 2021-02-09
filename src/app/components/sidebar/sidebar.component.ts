@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Farm } from 'src/app/models/Farm';
 import { MessageService } from 'src/app/_services/index';
 import {MatListModule} from '@angular/material/list';
-import { TidesService } from 'src/app/services/calculations.service';
+import { TidesService } from 'src/app/services/tides.service';
 
 
 @Component({

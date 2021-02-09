@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MessageService } from 'src/app/_services/index';
 import { MatButtonModule } from '@angular/material/button';
-import { TidesService } from 'src/app/services/calculations.service';
+import { TidesService } from 'src/app/services/tides.service';
 
 @Component({
   selector: 'app-tide-input-basic',
@@ -39,7 +39,9 @@ export class TideInputBasicComponent implements OnInit {
   }
 
   onTideUpdated(tideHeight: string) {
-    // this.tideUpdated.emit(this.newTideHeight);
+
+    // ANOTHER APPROACH - could call this.tidesService.tideHeightObs$.next(+tideHeight)
+    // This is because with Subjects you can call next from outside. What approach is better? This way I am keeping the actual Subject attribute of the TidesService private... Dunno.
     this.tidesService.setTideHeightObs(+tideHeight); // + operator casts the string to a number
   }
 

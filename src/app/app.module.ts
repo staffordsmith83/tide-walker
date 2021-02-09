@@ -18,7 +18,7 @@ import { DataService } from './services/data.service';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
-import { TidesService } from './services/calculations.service';
+import { TidesService } from './services/tides.service';
 import { HttpClientModule } from '@angular/common/http';
 
 

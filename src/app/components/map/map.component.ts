@@ -22,7 +22,7 @@ import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
 import { TideInputBasicComponent } from '../tide-input-basic/tide-input-basic.component';
 import { MessageService } from 'src/app/_services/index';
-import { TidesService } from 'src/app/services/calculations.service';
+import { TidesService } from 'src/app/services/tides.service';
 
 @Component({
   selector: 'app-map',

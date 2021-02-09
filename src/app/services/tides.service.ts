@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
 
@@ -11,7 +11,9 @@ export class TidesService {
   worldTidesApiKey = '3c2d3af9-c54c-42cf-8366-9cd62931d8d5';
   requestHeader = `https://www.worldtides.info/api/v2?heights&lat=-18.061&lon=122.369&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
   tideHeight: number = 999999;
-  private tideHeightObs$: BehaviorSubject<number> = new BehaviorSubject(0.0); // start with default value of 0.0?
+  
+  // If there are problems with this, may need to reimplement it as a BehaviourSubject and hold an initial value of 0.0 or something.
+  private tideHeightObs$: Subject<number> = new Subject; // start with default value of 0.0? Thats only for Behaviour Subjects.
 
   constructor(private http: HttpClient) {}
 
