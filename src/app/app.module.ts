@@ -13,7 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { TideInputBasicComponent } from './components/tide-input-basic/tide-input-basic.component'
-import { DataService } from './services/data.service';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
@@ -37,7 +36,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatListModule,
     HttpClientModule
   ],
-  providers: [DataService, TidesService],
+  providers: [TidesService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })
