@@ -1,18 +1,28 @@
-<span>Tide Values List:</span>
-<mat-list role="list">
-  <mat-list-item
-    role="listitem"
-    *ngFor="let tide of tidesHistory"
-    style="color: black"
-    >{{ tide }}</mat-list-item
-  >
-</mat-list>
+<app-tide-input-basic (tideUpdated)="onNewTideReceived($event)">
+</app-tide-input-basic>
 
-<button
-  *ngIf="tidesHistory?.length > 0"
-  mat-raised-button
-  color="primary"
-  (click)="onButtonClicked()"
->
-  Clear History
-</button>
+
+<mat-card>
+
+  <mat-card-content>
+    <span>Tide Values List:</span>
+    <mat-list role="list">
+      <mat-list-item role="listitem" *ngFor="let tide of tidesHistory" style="color: black">{{ tide }}</mat-list-item>
+    </mat-list>
+
+    <button *ngIf="tidesHistory?.length > 0" mat-raised-button color="primary" (click)="onButtonClicked()">
+      Clear History
+    </button>
+  </mat-card-content>
+</mat-card>
+
+<div id="bottom-bar" fxLayout="row">
+  <span>
+    <img
+      src="http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png"
+      alt="Legend Graphic"></span>
+  <span fxFlex></span>
+</div>
+<div>
+  <pre id="info" style="text-align: center"></pre>
+</div>

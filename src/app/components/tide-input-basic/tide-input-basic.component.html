@@ -1,27 +1,22 @@
-<div class="user-input-container">
-  <mat-label>Datetime:</mat-label>
-  <mat-form-field appearance="fill">
-    <input
-      matInput
-      #input
-      maxlength="10"
-      [placeholder]="'unixEpochText'"
-      [(ngModel)]="newDateTime"
-      (keydown.enter)="calculateTide(newDateTime)"
-    />
-    <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
-  </mat-form-field>
+<mat-card>
 
-  <mat-label>Tideheight:</mat-label>
-  <mat-form-field appearance="fill">
-    <input
-      matInput
-      #input
-      maxlength="10"
-      placeholder="'enter tide height'"
-      [(ngModel)]="tideHeight"
-      (keydown.enter)="onTideUpdated(tideHeight); resetDateTime()"
-    />
-    <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
-  </mat-form-field>
-</div>
+  <mat-card-content>
+    <div class="user-input-container">
+      <mat-label>Datetime:</mat-label>
+      <mat-form-field appearance="fill">
+        <input matInput #input maxlength="10" [placeholder]="'unixEpochText'" [(ngModel)]="newDateTime"
+          (keydown.enter)="calculateTide(newDateTime)" />
+        <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
+      </mat-form-field>
+      <br>
+
+      <mat-label>Tideheight:</mat-label>
+      <mat-form-field appearance="fill">
+        <input matInput #input maxlength="10" placeholder="'enter tide height'" [(ngModel)]="tideHeight"
+          (keydown.enter)="onTideUpdated(tideHeight); resetDateTime()" />
+        <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
+      </mat-form-field>
+    </div>
+  </mat-card-content>
+
+</mat-card>

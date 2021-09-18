@@ -18,6 +18,8 @@ import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
 import { TidesService } from './services/tides.service';
 import { HttpClientModule } from '@angular/common/http';
+import { MatCardModule } from '@angular/material/card';
+import { MatSidenavModule } from "@angular/material/sidenav";
 
 
 @NgModule({
@@ -34,10 +36,14 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     MatButtonModule,
     MatListModule,
-    HttpClientModule
+    HttpClientModule,
+    MatCardModule,
+    MatSidenavModule
   ],
   providers: [TidesService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+
+}

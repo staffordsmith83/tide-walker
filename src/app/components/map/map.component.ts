@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
+import { defaults } from 'src/app/config';
 
 @Component({
   selector: 'app-map',
@@ -11,6 +12,7 @@ import { TidesService } from 'src/app/services/tides.service';
 export class MapComponent implements OnInit {
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
   tideHeight = '-5';
+  geoServerRoot = defaults.geoServerRoot;
 
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
@@ -19,7 +21,7 @@ export class MapComponent implements OnInit {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private tidesService: TidesService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // subscribe to tideHeightObs Subject
@@ -81,7 +83,7 @@ export class MapComponent implements OnInit {
     // Add the NIDEM WMS layer
     this.map?.on('load', () => {
       let getMapRequest: string =
-        'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+        `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
       let sld_style: string = this.styleConstructor(this.tideHeight);
       let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
       console.log(fullRequest);
@@ -102,7 +104,7 @@ export class MapComponent implements OnInit {
       this.map?.addSource('nidemLegend', {
         type: 'image',
         url:
-          'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png',
+          `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
         coordinates: [
           [-80.425, 46.437],
           [-71.516, 46.437],
@@ -146,11 +148,12 @@ export class MapComponent implements OnInit {
     });
 
     //////////////////////////////////////////////
-    // show the coordinates at the mousepoint
+    // show the coordinates at the mousepoint, store it in a HTML element accessible to other components.
+    // TODO: Is there another Angularistic way to do this
     this.map?.on('mousemove', (e) => {
       this.document.getElementById('info').innerHTML =
         // e.lngLat is the longitude, latitude geographical position of the event
-        JSON.stringify(e.lngLat.wrap());
+        JSON.stringify("Lat: " + e.lngLat.lat.toFixed(4) + " Lng:" + e.lngLat.lng.toFixed(4));
     });
   }
 
@@ -172,7 +175,7 @@ export class MapComponent implements OnInit {
     console.log('Changes detected trying to reload WMS');
 
     let getMapRequest: string =
-      'http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE';
+      `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
     let sld_style: string = this.styleConstructor(this.tideHeight);
     let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
     console.log(fullRequest);

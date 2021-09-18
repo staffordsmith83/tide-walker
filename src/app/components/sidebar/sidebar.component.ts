@@ -12,6 +12,8 @@ import { TidesService } from 'src/app/services/tides.service';
 export class SidebarComponent implements OnInit, OnDestroy {
   tidesHistory: any[] = [];
   tidesSubscription: Subscription;
+  tideHeight: string = '0.0';
+
 
   constructor(
     private messageService: MessageService,
@@ -34,5 +36,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   onButtonClicked() {
     this.tidesHistory = [];
+  }
+
+  onNewTideReceived(userTideHeight: string) {
+    this.tideHeight = userTideHeight;
+    console.log(
+      'New tide height received by App Component: ' + this.tideHeight
+    );
   }
 }

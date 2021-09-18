@@ -1,15 +1,48 @@
 <div class="app-container" fxLayout="column">
-  <mat-toolbar>
+  <mat-toolbar color="primary">
+    <button mat-icon-button>
+      <mat-icon (click)="toggleSideBarState()">menu</mat-icon>
+    </button>
+    <img src="assets/icons/footprint1.png" alt="pin" width="70" height="55" />
     <span>Tide Walker</span>
     <span fxFlex></span>
-    <app-tide-input-basic (tideUpdated)="onNewTideReceived($event)">
-    </app-tide-input-basic>
+
     <button mat-icon-button>
       <mat-icon>search</mat-icon>
     </button>
   </mat-toolbar>
 
-  <!-- Had to set fxFlex to 90% in next line to prevent map being larger than page... -->
+  
+  <div fxFlex fxLayout="column">
+    <mat-sidenav-container fxFlex [hasBackdrop]="false">
+      <mat-sidenav mode="side" #sidenav opened="true">
+        <mat-nav-list>
+          <app-sidebar></app-sidebar>
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content fxLayout="column">
+        <div fxFlex class="main" fxLayout="row">
+          <div class="map-container" fxFlex>
+            <app-map></app-map>
+          </div>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+</div>
+
+
+<!-- <div class="app-container" fxLayout="column">
+  <mat-toolbar>
+    <span>Tide Walker</span>
+    <span fxFlex></span>
+    
+    <button mat-icon-button>
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-toolbar>
+
   <div class="main" fxLayout="row" fxFlex="90%">
     <div class="sidebar">
       <app-sidebar></app-sidebar>
@@ -19,4 +52,4 @@
       <app-map> </app-map>
     </div>
   </div>
-</div>
+</div> -->
