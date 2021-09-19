@@ -20,6 +20,7 @@ import { TidesService } from './services/tides.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from "@angular/material/sidenav";
+import { DlDateTimeDateModule, DlDateTimePickerModule } from 'angular-bootstrap-datetimepicker';
 
 
 @NgModule({
@@ -38,7 +39,9 @@ import { MatSidenavModule } from "@angular/material/sidenav";
     MatListModule,
     HttpClientModule,
     MatCardModule,
-    MatSidenavModule
+    MatSidenavModule,
+    DlDateTimeDateModule,  // <--- Determines the data type of the model
+    DlDateTimePickerModule,
   ],
   providers: [TidesService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],

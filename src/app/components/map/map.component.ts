@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
@@ -9,7 +9,7 @@ import { defaults } from 'src/app/config';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, AfterViewInit {
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
   tideHeight = '-5';
   geoServerRoot = defaults.geoServerRoot;
@@ -97,8 +97,11 @@ export class MapComponent implements OnInit {
         id: 'nidem_wms',
         type: 'raster',
         source: 'nidem',
-        paint: {},
+        paint: {
+          "raster-opacity": 0.7
+        }
       });
+
 
       // Add the legend
       this.map?.addSource('nidemLegend', {
@@ -128,23 +131,23 @@ export class MapComponent implements OnInit {
         data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
       });
 
-      // Add a symbol layer
-      this.map?.addLayer({
-        id: 'poi',
-        type: 'symbol',
-        source: 'points',
-        layout: {
-          'icon-image': 'footprint',
-          // get the title name from the source's "group" property
-          'text-field': ['get', 'group'],
-          'text-font': ['Open Sans Semibold'],
-          'text-offset': [0, 1.25],
-          'text-anchor': 'top',
-        },
-        paint: {
-          'text-color': '#000000',
-        },
-      });
+      // // Add a symbol layer
+      // this.map?.addLayer({
+      //   id: 'poi',
+      //   type: 'symbol',
+      //   source: 'points',
+      //   layout: {
+      //     'icon-image': 'footprint',
+      //     // get the title name from the source's "group" property
+      //     'text-field': ['get', 'group'],
+      //     'text-font': ['Open Sans Semibold'],
+      //     'text-offset': [0, 1.25],
+      //     'text-anchor': 'top',
+      //   },
+      //   paint: {
+      //     'text-color': '#000000',
+      //   },
+      // });
     });
 
     //////////////////////////////////////////////
@@ -155,6 +158,8 @@ export class MapComponent implements OnInit {
         // e.lngLat is the longitude, latitude geographical position of the event
         JSON.stringify("Lat: " + e.lngLat.lat.toFixed(4) + " Lng:" + e.lngLat.lng.toFixed(4));
     });
+
+
   }
 
   styleConstructor(tideHeight: string) {
@@ -192,10 +197,24 @@ export class MapComponent implements OnInit {
       id: 'nidem_wms',
       type: 'raster',
       source: 'nidem',
-      paint: {},
+      paint: {
+        "raster-opacity": 0.7
+      }
     });
   }
+
+
+  ngAfterViewInit() {
+    // this.map?.setPaintProperty(
+    //   'NIDEM',
+    //   'raster-opacity',
+    //   50
+    // );
+  }
+
 }
+
+
 
 // Do stuff when we click on the map
 // When a click event occurs on a feature in the places layer, open a popup at the
