@@ -2,9 +2,9 @@ import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
-import { defaults } from 'src/app/config';
 import { Store } from '@ngxs/store';
 import { TideStateModel } from 'src/app/state/tide.state';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-map',
@@ -15,7 +15,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
   unixTimestamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
   tideHeight: string = '-5';    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
-  geoServerRoot = defaults.geoServerRoot;
+  geoServerRoot = environment.geoServerRoot
 
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
