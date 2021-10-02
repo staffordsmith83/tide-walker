@@ -15,7 +15,7 @@
   
   <div fxFlex fxLayout="column">
     <mat-sidenav-container fxFlex [hasBackdrop]="false">
-      <mat-sidenav mode="side" #sidenav opened="true">
+      <mat-sidenav mode="side" #sidenav [opened]="sideBarState$ | async">
         <mat-nav-list>
           <app-sidebar></app-sidebar>
         </mat-nav-list>
@@ -32,24 +32,3 @@
   </div>
 </div>
 
-
-<!-- <div class="app-container" fxLayout="column">
-  <mat-toolbar>
-    <span>Tide Walker</span>
-    <span fxFlex></span>
-    
-    <button mat-icon-button>
-      <mat-icon>search</mat-icon>
-    </button>
-  </mat-toolbar>
-
-  <div class="main" fxLayout="row" fxFlex="90%">
-    <div class="sidebar">
-      <app-sidebar></app-sidebar>
-    </div>
-
-    <div class="map" fxFlex>
-      <app-map> </app-map>
-    </div>
-  </div>
-</div> -->

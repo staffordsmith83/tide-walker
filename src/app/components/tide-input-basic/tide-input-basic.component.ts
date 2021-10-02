@@ -6,7 +6,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 
-import { MessageService } from 'src/app/_services/index';
+import { MessageService } from 'src/app/services/index';
 import { TidesService } from 'src/app/services/tides.service';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';

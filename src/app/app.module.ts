@@ -22,6 +22,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { DlDateTimeDateModule, DlDateTimePickerModule } from 'angular-bootstrap-datetimepicker';
 
+import { NgxsModule } from '@ngxs/store';
+import { environment } from 'src/environments/environment';
+import { MainState } from './state/main.state';
+import { TideState } from './state/tide.state';
+
 
 @NgModule({
   imports: [
@@ -42,6 +47,9 @@ import { DlDateTimeDateModule, DlDateTimePickerModule } from 'angular-bootstrap-
     MatSidenavModule,
     DlDateTimeDateModule,  // <--- Determines the data type of the model
     DlDateTimePickerModule,
+    NgxsModule.forRoot([MainState, TideState], {
+      developmentMode: !environment.production
+    })
   ],
   providers: [TidesService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],

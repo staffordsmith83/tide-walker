@@ -3,6 +3,8 @@ import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
 import { defaults } from 'src/app/config';
+import { Store } from '@ngxs/store';
+import { TideStateModel } from 'src/app/state/tide.state';
 
 @Component({
   selector: 'app-map',
@@ -11,7 +13,8 @@ import { defaults } from 'src/app/config';
 })
 export class MapComponent implements OnInit, AfterViewInit {
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
-  tideHeight = '-5';
+  unixTimestamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
+  tideHeight: string = '-5';    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
   geoServerRoot = defaults.geoServerRoot;
 
   map: mapboxgl.Map | undefined;
@@ -20,11 +23,13 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private tidesService: TidesService
+    private tidesService: TidesService,
+    private store: Store
   ) { }
 
   ngOnInit() {
     // subscribe to tideHeightObs Subject
+    this.tidesService.getHeightFromDateTime(this.unixTimestamp);
     this.tidesService.getTideHeightObs().subscribe((tideHeight) => {
       this.tideHeight = tideHeight.toString();
       this.updateWms();
@@ -125,11 +130,11 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
       );
 
-      // add some dummy point locations
-      this.map?.addSource('points', {
-        type: 'geojson',
-        data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
-      });
+      // // add some dummy point locations
+      // this.map?.addSource('points', {
+      //   type: 'geojson',
+      //   data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
+      // });
 
       // // Add a symbol layer
       // this.map?.addLayer({
