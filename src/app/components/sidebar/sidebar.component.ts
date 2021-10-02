@@ -1,7 +1,6 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'src/app/_services/index';
-import { MatListModule } from '@angular/material/list';
 import { TidesService } from 'src/app/services/tides.service';
 
 @Component({

@@ -71,7 +71,6 @@
           "options": {
             "browserTarget": "tide-walker:build",
             "proxyConfig": "src/proxy.conf.json"
-
           },
           "configurations": {
             "production": {
@@ -131,5 +130,8 @@
       }
     }
   },
-  "defaultProject": "tide-walker"
+  "defaultProject": "tide-walker",
+  "cli": {
+    "defaultCollection": "@ngxs/schematics"
+  }
 }
