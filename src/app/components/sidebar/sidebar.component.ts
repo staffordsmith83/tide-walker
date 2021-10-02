@@ -18,12 +18,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private tidesService: TidesService
   ) {
-    // subscribe to tideHeightObs Subject
-    this.tidesSubscription = this.tidesService
-      .getTideHeightObs()
-      .subscribe((tideHeight) => {
-        this.tidesHistory.push(tideHeight.toString());
-      });
+    
+    // // subscribe to tideHeightObs Subject
+    // this.tidesSubscription = this.tidesService
+    //   .getTideHeightObs()
+    //   .subscribe((tideHeight) => {
+    //     this.tidesHistory.push(tideHeight.toString());
+    //   });
   }
 
   ngOnInit(): void {}

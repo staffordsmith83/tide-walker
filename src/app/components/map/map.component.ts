@@ -2,9 +2,11 @@ import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
-import { Store } from '@ngxs/store';
+import { Select, Store } from '@ngxs/store';
 import { TideStateModel } from 'src/app/state/tide.state';
 import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map',
@@ -14,12 +16,16 @@ import { environment } from 'src/environments/environment';
 export class MapComponent implements OnInit, AfterViewInit {
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
   unixTimestamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
-  tideHeight: string = '-5';    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
+  tideHeight: number = -5;    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
   geoServerRoot = environment.geoServerRoot
 
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
+
+  // Get access to the state:
+  @Select(state => (state.tide as TideStateModel).unixTimestamp) unixTimeStamp$: Observable<number>;
+  @Select(state => (state.tide as TideStateModel).tideHeight) tideHeight$: Observable<number>;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -28,12 +34,20 @@ export class MapComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    // subscribe to tideHeightObs Subject
+
+    // Get the initial tide height. TODO: Should this be done somewhere else?
     this.tidesService.getHeightFromDateTime(this.unixTimestamp);
-    this.tidesService.getTideHeightObs().subscribe((tideHeight) => {
-      this.tideHeight = tideHeight.toString();
-      this.updateWms();
-    });
+
+
+    // subscribe to tideHeightObs Subject
+    this.tideHeight$.pipe(
+      tap(height => {
+        this.tideHeight = height;
+        this.updateWms(height);
+
+      }),
+    ).subscribe();
+
     this.initialiseMap();
     this.setupMapFunctionality();
   }
@@ -63,7 +77,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             maxzoom: 22,
           },
         ],
-        glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
+        // glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
       },
       zoom: 11,
       center: [this.lng, this.lat],
@@ -121,14 +135,14 @@ export class MapComponent implements OnInit, AfterViewInit {
         ],
       });
 
-      // ADD POINT DATA SECTION -
-      this.map?.loadImage(
-        'http://localhost:4200/assets/icons/footprint1.png',
-        (error: any, image: any) => {
-          if (error) throw error;
-          this.map?.addImage('footprint', image);
-        }
-      );
+      // // ADD POINT DATA SECTION -
+      // this.map?.loadImage(
+      //   'http://localhost:4200/assets/icons/footprint1.png',
+      //   (error: any, image: any) => {
+      //     if (error) throw error;
+      //     this.map?.addImage('footprint', image);
+      //   }
+      // );
 
       // // add some dummy point locations
       // this.map?.addSource('points', {
@@ -167,7 +181,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   }
 
-  styleConstructor(tideHeight: string) {
+  styleConstructor(tideHeight: number) {
     // insert the tideHeight into the following string, which is a full sld style file as a string
     // important to put full workspace:layer name in the name tag of the sld xml!
     console.log('Map component thinks thide height is ' + this.tideHeight);
@@ -179,14 +193,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     return encodedStyle;
   }
 
-  updateWms() {
+  updateWms(tideHeight) {
     /////////////////////////////////
     // RUN THIS SECTION WHEN OBSERVABLE CHANGES
     console.log('Changes detected trying to reload WMS');
 
     let getMapRequest: string =
       `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-    let sld_style: string = this.styleConstructor(this.tideHeight);
+    let sld_style: string = this.styleConstructor(tideHeight);
     let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
     console.log(fullRequest);
 

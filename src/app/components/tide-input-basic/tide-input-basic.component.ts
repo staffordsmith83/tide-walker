@@ -11,6 +11,9 @@ import { TidesService } from 'src/app/services/tides.service';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import * as moment from 'moment';
+import { Store } from '@ngxs/store';
+import { MainActions } from 'src/app/state/main.actions';
+import { TideActions } from 'src/app/state/Tide.actions';
 
 @Component({
   selector: 'app-tide-input-basic',
@@ -30,32 +33,30 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
 
   constructor(
     private messageService: MessageService,
-    private tidesService: TidesService
+    private tidesService: TidesService,
+    private store: Store
   ) {
 
 
   }
 
   ngOnInit() {
-    // subscribe to tideHeightObs Subject
-    this.tidesService
-      .getTideHeightObs()
-      .subscribe((tideHeight) => (this.tideHeight = tideHeight.toString()));
+
 
     this.dateTimeValuesChanged$.pipe(
       tap(value => {
-
         this.calculateTideFromDate(value);
+        // Also hide the sidenav! THis is very useful on mobile
+        this.store.dispatch(new MainActions.ToggleSideBar());
+        // TODO: THis should be done somewhere else.
+        // TODO: Where is the best place to keep the tide and datetime in sync?
+        this.store.dispatch(new TideActions.UpdateUnixTimestamp(moment(value).unix()))
+        
       }),
       takeUntil(this.destroyed$)
     ).subscribe()
   }
 
-  onTideUpdated(tideHeight: string) {
-    // ANOTHER APPROACH - could call this.tidesService.tideHeightObs$.next(+tideHeight)
-    // This is because with Subjects you can call next from outside. What approach is better? This way I am keeping the actual Subject attribute of the TidesService private... Dunno.
-    this.tidesService.setTideHeightObs(+tideHeight); // + operator casts the string to a number
-  }
 
   resetDateTime() {
     this.newDateTime = 0;

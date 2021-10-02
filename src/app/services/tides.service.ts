@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Store } from '@ngxs/store';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
+import { TideActions } from '../state/Tide.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -12,20 +14,20 @@ export class TidesService implements OnInit, OnDestroy {
   requestHeader = `https://www.worldtides.info/api/v2?heights&lat=-18.061&lon=122.369&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
   tideHeight: number = 999999;
   // If there are problems with this, may need to reimplement it as a BehaviourSubject and hold an initial value of 0.0 or something.
-  private tideHeightObs$: Subject<number> = new Subject(); // start with default value of 0.0? Thats only for Behaviour Subjects.
+  // private tideHeightObs$: Subject<number> = new Subject(); // start with default value of 0.0? Thats only for Behaviour Subjects.
   apiSubscription: Subscription;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private store: Store) {}
 
   ngOnInit() {}
 
-  getTideHeightObs(): Observable<number> {
-    return this.tideHeightObs$.asObservable();
-  }
+  // getTideHeightObs(): Observable<number> {
+  //   return this.tideHeightObs$.asObservable();
+  // }
 
-  setTideHeightObs(tideHeight: number) {
-    this.tideHeightObs$.next(tideHeight);
-  }
+  // setTideHeightObs(tideHeight: number) {
+  //   this.tideHeightObs$.next(tideHeight);
+  // }
 
   getHeightFromDateTime(dateTime: number) {
     let response: Observable<any>;
@@ -46,7 +48,7 @@ export class TidesService implements OnInit, OnDestroy {
       )
       .subscribe((result) => {
         console.log('From WorldTides:', result);
-        this.setTideHeightObs(result);
+        this.store.dispatch(new TideActions.UpdateTideHeight(result));
       });
 
     console.log(request);

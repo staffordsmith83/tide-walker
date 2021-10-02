@@ -26,6 +26,8 @@ import { NgxsModule } from '@ngxs/store';
 import { environment } from 'src/environments/environment';
 import { MainState } from './state/main.state';
 import { TideState } from './state/tide.state';
+import { TopBarComponent } from './components/top-bar/top-bar.component';
+import { Sec2msPipe } from './pipes/sec2ms.pipe';
 
 
 @NgModule({
@@ -52,7 +54,7 @@ import { TideState } from './state/tide.state';
     })
   ],
   providers: [TidesService],
-  declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent],
+  declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent, TopBarComponent, Sec2msPipe],
   bootstrap: [AppComponent],
 })
 export class AppModule {

@@ -10,7 +10,8 @@ export interface TideStateModel {
   date: Date,
   time: number,
   unixTimestamp: number,
-  dateTimeReady: Boolean
+  dateTimeReady: Boolean,
+  tideHeight: number,
 
 };
 
@@ -20,7 +21,8 @@ const defaults: TideStateModel = {
   time: new Date().getTime(),
   // unixTimestamp: moment(new Date()).unix(),
   unixTimestamp: 1633173805,
-  dateTimeReady: true
+  dateTimeReady: true,
+  tideHeight: 0.0,
 
 };
 
@@ -32,9 +34,16 @@ const defaults: TideStateModel = {
 @Injectable()
 export class TideState {
   @Action(TideActions.UpdateUnixTimestamp)
-  openSideBar({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateUnixTimestamp) {
+  updateUnixTimestamp({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateUnixTimestamp) {
     patchState({
       unixTimestamp: payload
+    })
+  }
+  
+  @Action(TideActions.UpdateTideHeight)
+  updateTideHeight({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideHeight) {
+    patchState({
+      tideHeight: payload
     })
   }
 
