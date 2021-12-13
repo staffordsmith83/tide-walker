@@ -102,7 +102,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     // Add the NIDEM WMS layer
     this.map?.on('load', () => {
       let getMapRequest: string =
-        `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
+        `https://${this.geoServerRoot}/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=tidewalker:NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
       let sld_style: string = this.styleConstructor(this.tideHeight);
       let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
       console.log(fullRequest);
@@ -126,7 +126,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.map?.addSource('nidemLegend', {
         type: 'image',
         url:
-          `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
+          `https://${this.geoServerRoot}/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
         coordinates: [
           [-80.425, 46.437],
           [-71.516, 46.437],
@@ -199,7 +199,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     console.log('Changes detected trying to reload WMS');
 
     let getMapRequest: string =
-      `http://${this.geoServerRoot}/NIDEM/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
+      `https://${this.geoServerRoot}/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=tidewalker:NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
     let sld_style: string = this.styleConstructor(tideHeight);
     let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
     console.log(fullRequest);
