@@ -4,7 +4,9 @@ import { Store } from '@ngxs/store';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
+import { config } from '../configs/config';
 import { TideActions } from '../state/tide.actions';
+
 
 @Injectable({
   providedIn: 'root',

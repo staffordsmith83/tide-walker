@@ -5,18 +5,6 @@
 export const environment = {
   production: false,
   baseApiUrl: '',
-  // geoServerRoot: 'https://smithyserver.xyz/geoserver',
-  // geoServerRoot: 'https://ows.services.dea.ga.gov.au',
-  geoServerRoot: 'http://ec2-3-25-205-46.ap-southeast-2.compute.amazonaws.com:8080/geoserver',
+  geoServerRoot: 'http://ec2-3-25-96-54.ap-southeast-2.compute.amazonaws.com:8080/geoserver',
   nidemLayer: 'NIDEM',
-  // geoServerRoot: 'ec2-54-206-212-225.ap-southeast-2.compute.amazonaws.com:8080/geoserver',
 };
-
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.

@@ -49,3 +49,5 @@ scratches/requests.txt
 
 # API keys etc
 src/app/configs/config.ts
+src/environments/environment.prod.ts
+src/environments/environment.ts

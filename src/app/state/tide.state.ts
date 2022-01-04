@@ -3,7 +3,7 @@ import { Time } from "@angular/common";
 import { Injectable } from "@angular/core";
 import { State, Action, StateContext } from "@ngxs/store";
 import * as moment from "moment";
-import { TideActions } from "./Tide.actions";
+import { TideActions } from "./tide.actions";
 
 // the things we want control of
 export interface TideStateModel {

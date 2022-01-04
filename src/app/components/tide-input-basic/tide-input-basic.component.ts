@@ -13,7 +13,7 @@ import { takeUntil, tap } from 'rxjs/operators';
 import * as moment from 'moment';
 import { Store } from '@ngxs/store';
 import { MainActions } from 'src/app/state/main.actions';
-import { TideActions } from 'src/app/state/Tide.actions';
+import { TideActions } from 'src/app/state/tide.actions';
 
 @Component({
   selector: 'app-tide-input-basic',
