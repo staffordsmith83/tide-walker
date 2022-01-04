@@ -5,7 +5,10 @@
 export const environment = {
   production: false,
   baseApiUrl: '',
-  geoServerRoot: 'smithyserver.xyz/geoserver',
+  // geoServerRoot: 'https://smithyserver.xyz/geoserver',
+  // geoServerRoot: 'https://ows.services.dea.ga.gov.au',
+  geoServerRoot: 'http://ec2-3-25-205-46.ap-southeast-2.compute.amazonaws.com:8080/geoserver',
+  nidemLayer: 'NIDEM',
   // geoServerRoot: 'ec2-54-206-212-225.ap-southeast-2.compute.amazonaws.com:8080/geoserver',
 };
 
