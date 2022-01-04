@@ -46,3 +46,6 @@ testem.log
 Thumbs.db
 src/credentials.txt
 scratches/requests.txt
+
+# API keys etc
+src/app/configs/config.ts

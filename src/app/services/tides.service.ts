@@ -4,13 +4,13 @@ import { Store } from '@ngxs/store';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
-import { TideActions } from '../state/Tide.actions';
+import { TideActions } from '../state/tide.actions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TidesService implements OnInit, OnDestroy {
-  worldTidesApiKey = '3c2d3af9-c54c-42cf-8366-9cd62931d8d5';
+  worldTidesApiKey = config.worldTidesApiKey;
   requestHeader = `https://www.worldtides.info/api/v2?heights&lat=-18.061&lon=122.369&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
   tideHeight: number = 999999;
   // If there are problems with this, may need to reimplement it as a BehaviourSubject and hold an initial value of 0.0 or something.
