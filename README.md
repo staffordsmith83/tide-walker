@@ -1,27 +1,22 @@
-# SimpleGmapsDemo
+# Tide Walker
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.4.
+This app is intended to facilitate access to the intertidal zone, in areas with extreme tides.
+The initial use case and inspiration for the app is to plan tourism visitation of the dinosaur footprints in Broome, Western Australia.
+The surviving footprints are mostly located in the intertidal zone.
 
-## Development server
+## Live Demo
+The app is live at
+https://www.tidewalker.com.au/
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Architecture
 
-## Code scaffolding
+The app has a frontend built using Angular, and makes heavy use of the mapbox-gl.js mapping API.
+NGXS is used for state management. In the live demo, the frontend is running on GCP AppEngine, a PAAS solution.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+The backend is Geoserver running on a GCP Compute Engine instance.
+This is communicated with using OGC standard WMS and WFS requests directly from the Angular frontend.
+The Geoserver REST API is not used, as this is intended for configuration only, not serving spatial data.
+The WorldTides API is also used, to obtain tide height values. This is a paid service.
 
-## Build
+The GCP Geoserver instance sits behind a GCP HTTPS Load Balancer. This is a convenient and secure way to enable HTTPS encryption for the server. HTTPS encryption is necessary, because it is important for the TideWalker app to be able to use device geolocation - this is disabled under HTTP.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.

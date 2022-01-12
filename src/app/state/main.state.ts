@@ -18,7 +18,7 @@ export interface MainStateModel {
 
 // the default state of those things
 const defaults: MainStateModel = {
-  sideBarOpen: false,
+  sideBarOpen: true,
 
 };
 

@@ -1,7 +1,9 @@
 export const environment = {
   production: true,
   baseApiUrl: '',
-  // geoServerRoot: 'http://ec2-3-25-96-54.ap-southeast-2.compute.amazonaws.com:8080/geoserver',
-  geoServerRoot: 'http://13.238.73.166:8080/geoserver',
+  // geoServerRoot: 'http://34.87.216.86:8080/geoserver', //GCP external IP
+  // geoServerRoot: 'http://10.152.0.10:8080/geoserver', // GCP Internal IP
+  geoServerRoot: 'https://smithyserver.xyz/geoserver', // GCP https load balancer, secured
+
   nidemLayer: 'NIDEM',
 };
