@@ -1,8 +1,9 @@
-<app-tide-input-basic (tideUpdated)="onNewTideReceived($event)">
-</app-tide-input-basic>
+<div fxLayout="column">
+  <app-tide-input-basic (tideUpdated)="onNewTideReceived($event)" fxFlex>
+  </app-tide-input-basic>
 
 
-<!-- <mat-card>
+  <!-- <mat-card>
 
   <mat-card-content>
     <span>Tide Values List:</span>
@@ -16,15 +17,21 @@
   </mat-card-content>
 </mat-card> -->
 
-<!-- Legend graphic not being returned from geoserver! -->
+  <!-- Legend graphic not being returned from geoserver! -->
 
-<!-- <div id="bottom-bar" fxLayout="row">
+  <!-- <div id="bottom-bar" fxLayout="row">
   <span>
     <img
       src="http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png"
       alt="Legend Graphic"></span>
   <span fxFlex></span>
 </div> -->
-<div>
-  <pre id="info" style="text-align: center"></pre>
+  <div fxFlex><img src="assets/icons/footprint1.png" alt="pin" width="200" /></div>
+  <div fxFlex></div>
+
+
+  <div fxFlex fxLayoutAlign="center end">
+    <pre id="info" style="text-align: center"></pre>
+  </div>
+
 </div>

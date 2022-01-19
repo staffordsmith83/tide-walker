@@ -19,6 +19,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   tideHeight: number = -5;    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
   geoServerRoot = environment.geoServerRoot
 
+  // nidemSourceLoaded: boolean = false;
+
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
@@ -35,6 +37,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
 
+    // // Check if source is loaded
+    // // TODO this may need to be setup as an observable...
+    // this.nidemSourceLoaded = this.map?.isSourceLoaded('bathymetry-data') || false;
+    
+    
     // Get the initial tide height. TODO: Should this be done somewhere else?
     this.tidesService.getHeightFromDateTime(this.unixTimestamp);
 
@@ -103,7 +110,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.map?.on('load', () => {
       let getMapRequest: string =
         `${this.geoServerRoot}/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=tidewalker:NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-        // `${this.geoServerRoot}/wms?service=WMS&version=1.3.0&request=GetMap&LAYERS=NIDEM&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
+      // `${this.geoServerRoot}/wms?service=WMS&version=1.3.0&request=GetMap&LAYERS=NIDEM&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
       let sld_style: string = this.styleConstructor(this.tideHeight);
       let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
       console.log(fullRequest);
@@ -128,7 +135,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         type: 'image',
         url:
           `${this.geoServerRoot}/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
-          // `${this.geoServerRoot}/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
+        // `${this.geoServerRoot}/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
         coordinates: [
           [-80.425, 46.437],
           [-71.516, 46.437],
@@ -203,13 +210,16 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     let getMapRequest: string =
       `${this.geoServerRoot}/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=tidewalker:NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-      // `${this.geoServerRoot}/wms?service=WMS&version=1.3.0&request=GetMap&LAYERS=NIDEM&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
+    // `${this.geoServerRoot}/wms?service=WMS&version=1.3.0&request=GetMap&LAYERS=NIDEM&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
     let sld_style: string = this.styleConstructor(tideHeight);
     let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
     console.log(fullRequest);
 
-    this.map?.removeLayer('nidem_wms');
-    this.map?.removeSource('nidem');
+    if (this.layerExists('nidem_wms')) {
+      this.map?.removeLayer('nidem_wms');
+      this.map?.removeSource('nidem');
+    }
+
 
     this.map?.addSource('nidem', {
       type: 'raster',
@@ -234,6 +244,18 @@ export class MapComponent implements OnInit, AfterViewInit {
     //   50
     // );
   }
+
+  layerExists(layerName): boolean {
+    if (this.map?.getLayer(layerName)) {
+      return true
+    }
+    else {
+      return false
+    }
+
+  }
+
+
 
 }
 
