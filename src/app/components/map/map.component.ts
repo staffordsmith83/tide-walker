@@ -1,19 +1,29 @@
-import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Inject, AfterViewInit, OnDestroy } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
 import { Select, Store } from '@ngxs/store';
 import { TideStateModel } from 'src/app/state/tide.state';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
+import { TideActions } from 'src/app/state/tide.actions';
+import { MainActions } from 'src/app/state/main.actions';
+import { LayersService } from 'src/app/services/layers.service';
+import { MainStateModel } from 'src/app/state/main.state';
+import U from 'mapbox-gl-utils';
+
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  // An efficient way to unsubscribe to observables, used in conjunction with ngOnDestroy
+  destroyed$ = new Subject<void>();
+
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
   unixTimestamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
   tideHeight: number = -5;    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
@@ -28,39 +38,63 @@ export class MapComponent implements OnInit, AfterViewInit {
   // Get access to the state:
   @Select(state => (state.tide as TideStateModel).unixTimestamp) unixTimeStamp$: Observable<number>;
   @Select(state => (state.tide as TideStateModel).tideHeight) tideHeight$: Observable<number>;
+  @Select(state => (state.tide as TideStateModel).tideWmsUrl) tideWmsUrl$: Observable<number>;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private tidesService: TidesService,
-    private store: Store
+    private store: Store,
+    private layersService: LayersService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
 
     // // Check if source is loaded
     // // TODO this may need to be setup as an observable...
     // this.nidemSourceLoaded = this.map?.isSourceLoaded('bathymetry-data') || false;
-    
-    
+
+
+
     // Get the initial tide height. TODO: Should this be done somewhere else?
-    this.tidesService.getHeightFromDateTime(this.unixTimestamp);
+    this.tidesService.updateTideHeightFromApi(this.unixTimestamp);
 
 
-    // subscribe to tideHeightObs Subject
+    // Watch Tide Height - when it changes, update the wms.
     this.tideHeight$.pipe(
       tap(height => {
         this.tideHeight = height;
-        this.updateWms(height);
-
+        this.updateWms();
       }),
+      takeUntil(this.destroyed$)
     ).subscribe();
 
-    this.initialiseMap();
+
+
+    // Watch the tidesWmsUrl for changes
+    this.tideWmsUrl$.pipe(
+      tap(tileUrl => {
+        this.updateWms();
+      }),
+      takeUntil(this.destroyed$)
+    ).subscribe();
+
+
+
+
+
+
+
+    await this.initialiseMap();
     this.setupMapFunctionality();
   }
 
-  initialiseMap() {
+  async initialiseMap() {
+
+    // Generate the WMS request in layersService and update the tiles url in the state
+    // await this.layersService.generateTidesWmsUrl();
+
     //  Initialise the Map
+    let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
     this.map = new mapboxgl.Map({
       container: 'map',
       style: {
@@ -74,6 +108,10 @@ export class MapComponent implements OnInit, AfterViewInit {
             ],
             tileSize: 256,
           },
+          'nidem': {
+            type: 'raster',
+            tiles: [this.store.selectSnapshot(state => (state.tide as TideStateModel).tideWmsUrl)],
+          },
         },
         layers: [
           {
@@ -83,11 +121,20 @@ export class MapComponent implements OnInit, AfterViewInit {
             minzoom: 0,
             maxzoom: 22,
           },
-        ],
+
+          {
+            id: 'nidem_wms',
+            type: 'raster',
+            source: 'nidem',
+            paint: {
+              "raster-opacity": 0.7
+            }
+          }
+        ]
         // glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
       },
       zoom: 11,
-      center: [this.lng, this.lat],
+      center: [location[1], location[0]],
     });
 
     // Add map controls
@@ -100,132 +147,50 @@ export class MapComponent implements OnInit, AfterViewInit {
         trackUserLocation: true,
       })
     );
+
+    // Initialise Mapbox GL Utils library
+    U.init(this.map);
   }
+
+
 
   setupMapFunctionality() {
     ////////////////////////////////////////////////////////////////////////////////////////
     // EVENT DRIVEN BEHAVIOURS
 
-    // Add the NIDEM WMS layer
-    this.map?.on('load', () => {
-      let getMapRequest: string =
-        `${this.geoServerRoot}/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=tidewalker:NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-      // `${this.geoServerRoot}/wms?service=WMS&version=1.3.0&request=GetMap&LAYERS=NIDEM&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-      let sld_style: string = this.styleConstructor(this.tideHeight);
-      let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
-      console.log(fullRequest);
 
-      this.map?.addSource('nidem', {
-        type: 'raster',
-        tiles: [fullRequest],
-      });
-
-      this.map?.addLayer({
-        id: 'nidem_wms',
-        type: 'raster',
-        source: 'nidem',
-        paint: {
-          "raster-opacity": 0.7
-        }
-      });
-
-
-      // Add the legend
-      this.map?.addSource('nidemLegend', {
-        type: 'image',
-        url:
-          `${this.geoServerRoot}/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
-        // `${this.geoServerRoot}/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM&WIDTH=20&HEIGHT=20&FORMAT=image/png`,
-        coordinates: [
-          [-80.425, 46.437],
-          [-71.516, 46.437],
-          [-71.516, 37.936],
-          [-80.425, 37.936],
-        ],
-      });
-
-      // // ADD POINT DATA SECTION -
-      // this.map?.loadImage(
-      //   'http://localhost:4200/assets/icons/footprint1.png',
-      //   (error: any, image: any) => {
-      //     if (error) throw error;
-      //     this.map?.addImage('footprint', image);
-      //   }
-      // );
-
-      // // add some dummy point locations
-      // this.map?.addSource('points', {
-      //   type: 'geojson',
-      //   data: 'http://localhost:4200/assets/footprintsWGS84.geojson',
-      // });
-
-      // // Add a symbol layer
-      // this.map?.addLayer({
-      //   id: 'poi',
-      //   type: 'symbol',
-      //   source: 'points',
-      //   layout: {
-      //     'icon-image': 'footprint',
-      //     // get the title name from the source's "group" property
-      //     'text-field': ['get', 'group'],
-      //     'text-font': ['Open Sans Semibold'],
-      //     'text-offset': [0, 1.25],
-      //     'text-anchor': 'top',
-      //   },
-      //   paint: {
-      //     'text-color': '#000000',
-      //   },
-      // });
+    this.map.on('moveend', () => {
+      console.log('A moveend event occurred.');
+      let center = this.map?.getCenter();
+      if (center) {
+        this.store.dispatch(new MainActions.UpdateLocation([center.lat, center.lng]));
+      }
     });
-
-    //////////////////////////////////////////////
-    // show the coordinates at the mousepoint, store it in a HTML element accessible to other components.
-    // TODO: Is there another Angularistic way to do this
-    this.map?.on('mousemove', (e) => {
-      this.document.getElementById('info').innerHTML =
-        // e.lngLat is the longitude, latitude geographical position of the event
-        JSON.stringify("Lat: " + e.lngLat.lat.toFixed(4) + " Lng:" + e.lngLat.lng.toFixed(4));
-    });
-
-
   }
 
-  styleConstructor(tideHeight: number) {
-    // insert the tideHeight into the following string, which is a full sld style file as a string
-    // important to put full workspace:layer name in the name tag of the sld xml!
-    console.log('Map component thinks thide height is ' + this.tideHeight);
-    let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>tidewalker:NIDEM_mosaic<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
-    // let sldXmlTemplate: string = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<StyledLayerDescriptor xmlns=\"http:\/\/www.opengis.net\/sld\" xmlns:ogc=\"http:\/\/www.opengis.net\/ogc\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xsi:schemaLocation=\"http:\/\/www.opengis.net\/sld\r\nhttp:\/\/schemas.opengis.net\/sld\/1.0.0\/StyledLayerDescriptor.xsd\" version=\"1.0.0\">\r\n  <NamedLayer>\r\n    <Name>NIDEM<\/Name>\r\n    <UserStyle>\r\n      <Title>A raster style<\/Title>\r\n      <FeatureTypeStyle>\r\n        <Rule>\r\n          <RasterSymbolizer>\r\n            <ColorMap type=\"intervals\" extended=\"true\">\r\n        \t\t<ColorMapEntry color=\"#3e7ee6\" quantity=\"${tideHeight}\" label=\"submerged\" opacity=\"1\"\/>\r\n              \t<ColorMapEntry color=\"#faf0a2\" quantity=\"50\" label=\"exposed\" opacity=\"1\"\/>\r\n\t\t\t<\/ColorMap>\r\n          <\/RasterSymbolizer>\r\n        <\/Rule>\r\n      <\/FeatureTypeStyle>\r\n    <\/UserStyle>\r\n  <\/NamedLayer>\r\n<\/StyledLayerDescriptor>`;
 
-    // encode the sld to be passed as a url, use encodeURIComponent to encode the ? characters especially
-    let encodedStyle = encodeURIComponent(sldXmlTemplate);
-
-    return encodedStyle;
-  }
-
-  updateWms(tideHeight) {
+  async updateWms() {
     /////////////////////////////////
     // RUN THIS SECTION WHEN OBSERVABLE CHANGES
     console.log('Changes detected trying to reload WMS');
 
-    let getMapRequest: string =
-      `${this.geoServerRoot}/wms?service=WMS&version=1.1.0&request=GetMap&LAYERS=tidewalker:NIDEM_mosaic&SRS=epsg:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-    // `${this.geoServerRoot}/wms?service=WMS&version=1.3.0&request=GetMap&LAYERS=NIDEM&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=256&HEIGHT=256&FORMAT=image/png&transparent=TRUE`;
-    let sld_style: string = this.styleConstructor(tideHeight);
-    let fullRequest: string = getMapRequest + '&STYLE_BODY=' + sld_style;
-    console.log(fullRequest);
+    // Generate the WMS request in layersService and update the tiles url in the state
+    let fullRequest = await this.layersService.generateTidesWmsUrl();
 
+
+    // Check if the layer exists, if it does remove it
     if (this.layerExists('nidem_wms')) {
       this.map?.removeLayer('nidem_wms');
       this.map?.removeSource('nidem');
     }
 
-
+    // Add the source
     this.map?.addSource('nidem', {
       type: 'raster',
       tiles: [fullRequest],
     });
 
+    // Add the layer
     this.map?.addLayer({
       id: 'nidem_wms',
       type: 'raster',
@@ -255,7 +220,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   }
 
-
+  ngOnDestroy() {
+    // update the destroyed$ Subject. This will cause all our observables to be unsubscribed
+    this.destroyed$.next();
+    this.destroyed$.complete();
+  }
 
 }
 

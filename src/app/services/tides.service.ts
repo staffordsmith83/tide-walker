@@ -5,6 +5,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
 import { config } from '../configs/config';
+import { MainStateModel } from '../state/main.state';
 import { TideActions } from '../state/tide.actions';
 
 
@@ -13,7 +14,7 @@ import { TideActions } from '../state/tide.actions';
 })
 export class TidesService implements OnInit, OnDestroy {
   worldTidesApiKey = config.worldTidesApiKey;
-  requestHeader = `https://www.worldtides.info/api/v2?heights&lat=-18.061&lon=122.369&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
+  requestHeader = `https://www.worldtides.info/api/v2?heights&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
   tideHeight: number = 999999;
   // If there are problems with this, may need to reimplement it as a BehaviourSubject and hold an initial value of 0.0 or something.
   // private tideHeightObs$: Subject<number> = new Subject(); // start with default value of 0.0? Thats only for Behaviour Subjects.
@@ -31,9 +32,11 @@ export class TidesService implements OnInit, OnDestroy {
   //   this.tideHeightObs$.next(tideHeight);
   // }
 
-  getHeightFromDateTime(dateTime: number) {
+  updateTideHeightFromApi(dateTime: number) {
+    let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
+
     let response: Observable<any>;
-    let request: string = this.requestHeader + dateTime.toString();
+    let request: string = `${this.requestHeader}${dateTime.toString()}&lat=${location[0]}&lon=${location[1]}`;
     console.log(
       'Calculations Service received datTime as:' + dateTime.toString()
     );
@@ -45,20 +48,20 @@ export class TidesService implements OnInit, OnDestroy {
       .pipe(
         map((responseData) => {
           const height: number = responseData.heights[0].height;
-          return height;
+          const station: string = responseData.station;
+          return {height, station};
         })
       )
       .subscribe((result) => {
         console.log('From WorldTides:', result);
-        this.store.dispatch(new TideActions.UpdateTideHeight(result));
+        this.store.dispatch(new TideActions.UpdateTideHeight(result.height));
+        this.store.dispatch(new TideActions.UpdateTideStation(result.station));
       });
 
     console.log(request);
   }
 
-  // TODO: also return station name that observation is from. Display to user.
-  // getNearestTideStation() {}
-
+  
   ngOnDestroy() {
     this.apiSubscription.unsubscribe();
   }

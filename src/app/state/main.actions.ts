@@ -11,4 +11,10 @@ export namespace MainActions {
     static readonly type = "[Main] Toggle SideBar";
   }
 
+  export class UpdateLocation {
+    static readonly type = "[Main] Update Location";
+    // should be [lat, long]
+    constructor(public payload: [number, number] | undefined) { }
+  }
+
 }

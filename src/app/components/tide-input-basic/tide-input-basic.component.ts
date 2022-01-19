@@ -64,12 +64,12 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
 
   calculateTide(dateTime: number): void {
     // Prompt the tides service to recalculate the global tideHeight variable
-    this.tidesService.getHeightFromDateTime(dateTime);
+    this.tidesService.updateTideHeightFromApi(dateTime);
   }
 
   calculateTideFromDate(selectedDate: any) {
     var unixTimestamp = moment(selectedDate).unix();
-    this.tidesService.getHeightFromDateTime(unixTimestamp);
+    this.tidesService.updateTideHeightFromApi(unixTimestamp);
 
   }
 

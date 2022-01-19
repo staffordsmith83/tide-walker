@@ -28,6 +28,7 @@ import { MainState } from './state/main.state';
 import { TideState } from './state/tide.state';
 import { TopBarComponent } from './components/top-bar/top-bar.component';
 import { Sec2msPipe } from './pipes/sec2ms.pipe';
+import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 
 
 @NgModule({
@@ -51,7 +52,9 @@ import { Sec2msPipe } from './pipes/sec2ms.pipe';
     DlDateTimePickerModule,
     NgxsModule.forRoot([MainState, TideState], {
       developmentMode: !environment.production
-    })
+    }),
+    NgxsLoggerPluginModule.forRoot(),
+
   ],
   providers: [TidesService],
   declarations: [AppComponent, MapComponent, SidebarComponent, TideInputBasicComponent, TopBarComponent, Sec2msPipe],

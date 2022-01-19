@@ -10,6 +10,14 @@ export namespace TideActions {
     constructor(public payload: number) { }
   }
 
+  export class UpdateTideStation {
+    static readonly type = "[Tide] Update TideStation";
+    constructor(public payload: string | undefined) { }
+  }
 
+  export class UpdateTideWmsUrl {
+    static readonly type = "[Tide] Update Tide Wms Url"
+    constructor(public payload: string) { }
+  }
 
 }

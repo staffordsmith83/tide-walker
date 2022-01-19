@@ -13,13 +13,13 @@ import { MainActions } from "./main.actions";
 // the things we want control of
 export interface MainStateModel {
   sideBarOpen: boolean;
-
+  location: [number, number];
 };
 
 // the default state of those things
 const defaults: MainStateModel = {
   sideBarOpen: true,
-
+  location: [-17.9618, 122.2370],
 };
 
 @State<MainStateModel>({
@@ -38,7 +38,7 @@ export class MainState {
 
 
   @Action(MainActions.CloseSideBar)
-  clodeSideBar({ patchState }: StateContext<MainStateModel>) {
+  closeSideBar({ patchState }: StateContext<MainStateModel>) {
     patchState({
       sideBarOpen: false
     })
@@ -54,7 +54,12 @@ export class MainState {
     });
   }
 
-
+  @Action(MainActions.UpdateLocation)
+  updateLocations({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateLocation) {
+    patchState({
+      location: payload   // should be [lat, long]
+    })
+  }
 
 
 

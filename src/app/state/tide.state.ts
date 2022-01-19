@@ -12,6 +12,8 @@ export interface TideStateModel {
   unixTimestamp: number,
   dateTimeReady: Boolean,
   tideHeight: number,
+  tideStation: string,
+  tideWmsUrl: string
 
 };
 
@@ -23,6 +25,8 @@ const defaults: TideStateModel = {
   unixTimestamp: 1633173805,
   dateTimeReady: true,
   tideHeight: 0.0,
+  tideStation: 'Not Selected',
+  tideWmsUrl: ''
 
 };
 
@@ -39,11 +43,25 @@ export class TideState {
       unixTimestamp: payload
     })
   }
-  
+
   @Action(TideActions.UpdateTideHeight)
   updateTideHeight({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideHeight) {
     patchState({
       tideHeight: payload
+    })
+  }
+
+  @Action(TideActions.UpdateTideStation)
+  updateTideStation({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideStation) {
+    patchState({
+      tideStation: payload
+    })
+  }
+  
+  @Action(TideActions.UpdateTideWmsUrl)
+  updateTideWmsUrl({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideWmsUrl) {
+    patchState({
+      tideWmsUrl: payload
     })
   }
 
