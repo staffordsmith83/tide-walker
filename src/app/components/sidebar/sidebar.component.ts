@@ -44,4 +44,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       'New tide height received by App Component: ' + this.tideHeight
     );
   }
+
+  getDailyClicked() {
+    this.tidesService.getDailyTidesArray()
+  }
 }

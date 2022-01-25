@@ -7,6 +7,8 @@ import { WorldTidesResponse } from 'src/app/models/WorldTidesResponseModel';
 import { config } from '../configs/config';
 import { MainStateModel } from '../state/main.state';
 import { TideActions } from '../state/tide.actions';
+import { TideStateModel } from '../state/tide.state';
+import { Worldtides } from './deno_worldtides';
 
 
 @Injectable({
@@ -14,15 +16,21 @@ import { TideActions } from '../state/tide.actions';
 })
 export class TidesService implements OnInit, OnDestroy {
   worldTidesApiKey = config.worldTidesApiKey;
+
+  // New way using Deno_Worldtides wrapper
+  worldtides = new Worldtides({
+    key: config.worldTidesApiKey
+  })
+
   requestHeader = `https://www.worldtides.info/api/v2?heights&key=${this.worldTidesApiKey}&stationDistance=100&step=60&length=1&start=`;
   tideHeight: number = 999999;
   // If there are problems with this, may need to reimplement it as a BehaviourSubject and hold an initial value of 0.0 or something.
   // private tideHeightObs$: Subject<number> = new Subject(); // start with default value of 0.0? Thats only for Behaviour Subjects.
   apiSubscription: Subscription;
 
-  constructor(private http: HttpClient, private store: Store) {}
+  constructor(private http: HttpClient, private store: Store) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   // getTideHeightObs(): Observable<number> {
   //   return this.tideHeightObs$.asObservable();
@@ -49,7 +57,7 @@ export class TidesService implements OnInit, OnDestroy {
         map((responseData) => {
           const height: number = responseData.heights[0].height;
           const station: string = responseData.station;
-          return {height, station};
+          return { height, station };
         })
       )
       .subscribe((result) => {
@@ -61,7 +69,25 @@ export class TidesService implements OnInit, OnDestroy {
     console.log(request);
   }
 
-  
+
+  async getDailyTidesArray() {
+    let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
+    let unixTimeStamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
+    let date = new Date(unixTimeStamp * 1000);
+    
+    const result = await this.worldtides.request({
+      lat: location[0],
+      lon: location[1],
+      heights: true,
+      date: date
+    })
+    
+    console.log(result)
+    return result.heights;
+
+  }
+
+
   ngOnDestroy() {
     this.apiSubscription.unsubscribe();
   }
