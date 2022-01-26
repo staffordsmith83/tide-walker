@@ -72,7 +72,7 @@ export class TidesService implements OnInit, OnDestroy {
 
   async getDailyTidesArray() {
     let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
-    let unixTimeStamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
+    let unixTimeStamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp)
     let date = new Date(unixTimeStamp * 1000);
     
     const result = await this.worldtides.request({
@@ -81,6 +81,7 @@ export class TidesService implements OnInit, OnDestroy {
       heights: true,
       date: date
     })
+    
     
     console.log(result)
     return result.heights;

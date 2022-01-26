@@ -14,15 +14,19 @@
       <mat-sidenav mode="side" #sidenav [opened]="sideBarState$ | async">
         <mat-nav-list style="text-align: center;">
           <app-sidebar></app-sidebar>
-         
+
         </mat-nav-list>
       </mat-sidenav>
 
       <mat-sidenav-content fxLayout="column">
-        <div fxFlex class="main" fxLayout="row">
+        <div fxFlex class="main" fxLayout="column">
           <div class="map-container" fxFlex>
             <app-map></app-map>
           </div>
+          <div id="chart-card" fxFlex>
+            <app-daily-chart></app-daily-chart>
+          </div>
+
         </div>
 
         <app-top-bar></app-top-bar>

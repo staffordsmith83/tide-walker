@@ -47,11 +47,16 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
       tap(value => {
         this.calculateTideFromDate(value);
         // Also hide the sidenav! THis is very useful on mobile
-        this.store.dispatch(new MainActions.ToggleSideBar());
+
+        // ***************************************************************************************************************************************
+        // Uncomment this next line to hide sidenav automatically when getting new tide level
+        this.store.dispatch(new MainActions.ToggleSideBar());      
+        // ***************************************************************************************************************************************
+        
         // TODO: THis should be done somewhere else.
         // TODO: Where is the best place to keep the tide and datetime in sync?
         this.store.dispatch(new TideActions.UpdateUnixTimestamp(moment(value).unix()))
-        
+
       }),
       takeUntil(this.destroyed$)
     ).subscribe()

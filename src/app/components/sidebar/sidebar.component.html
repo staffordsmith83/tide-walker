@@ -1,4 +1,4 @@
-<div fxLayout="column">
+<div fxLayout="column" fxFill>
   <app-tide-input-basic (tideUpdated)="onNewTideReceived($event)" fxFlex>
   </app-tide-input-basic>
 
@@ -26,16 +26,14 @@
       alt="Legend Graphic"></span>
   <span fxFlex></span>
 </div> -->
-  <div fxFlex><img src="assets/icons/footprint1.png" alt="pin" width="200" /></div>
-  <div fxFlex></div>
 
 
-  <div fxFlex fxLayoutAlign="center end">
-    <pre id="info" style="text-align: center"></pre>
-  </div>
+  <!-- <div id="chart-card" fxFlex>
+    <app-daily-chart></app-daily-chart>
+  </div> -->
 
-  <div class='request-buttons-section'>
-    <button mat-raised-button (click)=getDailyClicked()>Get Daily Array</button>
-  </div>
+
+  <!-- <div fxFlex><img src="assets/icons/footprint1.png" alt="pin" width="200" /></div>
+  <div fxFlex></div> -->
 
 </div>

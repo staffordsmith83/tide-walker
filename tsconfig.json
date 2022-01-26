@@ -21,7 +21,11 @@
       "es2018",
       "dom"
     ],
-    "types": ["googlemaps"]
+    "types": [
+      "googlemaps"
+    ],
+    "strictNullChecks": false,
+    "strictFunctionTypes": false
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
