@@ -10,6 +10,8 @@ import { Select } from '@ngxs/store';
 import { TideStateModel } from 'src/app/state/tide.state';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
+import { curveLinear } from 'd3';
+
 
 @Component({
   selector: 'app-daily-chart',
@@ -74,8 +76,8 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // root.dom.style.height = 300 + "px";
 
     root.setThemes([
-      am5themes_Responsive.new(root),
-      // am5themes_Animated.new(root)
+      // am5themes_Responsive.new(root),
+      am5themes_Animated.new(root)
     ]);
 
     root.dateFormatter.setAll({
@@ -112,12 +114,13 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // Create series
     // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
     var series0 = chart.series.push(am5xy.LineSeries.new(root, {
-      calculateAggregates: true,
+      // calculateAggregates: true,
       xAxis: xAxis,
       yAxis: yAxis,
       valueYField: "height",
       valueXField: "date",
       valueField: "height",
+      curveFactory: curveLinear, // TODO SMOOTHING NOT WORKING - DUE TO data.processor maybe?
       tooltip: am5.Tooltip.new(root, {
         labelText: "value: {value}"
       })
@@ -143,7 +146,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
     // https://www.amcharts.com/docs/v5/concepts/animations/
     series0.appear(1000);
 
-    chart.appear(1000, 100);
+    chart.appear(3000, 100);
     // root.resize();
 
     this.root = root;
