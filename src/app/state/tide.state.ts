@@ -1,11 +1,17 @@
 // angular imports
-import { Time } from "@angular/common";
+// import { Time } from "@angular/common";
 import { Injectable } from "@angular/core";
 import { State, Action, StateContext } from "@ngxs/store";
-import * as moment from "moment";
+// import * as moment from "moment";
 import { TideActions } from "./tide.actions";
 
 // the things we want control of
+
+export interface TideMeasurement {
+  dt: number,
+  date: string,
+  height: number,
+}
 export interface TideStateModel {
   date: Date,
   time: number,
@@ -13,7 +19,8 @@ export interface TideStateModel {
   dateTimeReady: Boolean,
   tideHeight: number,
   tideStation: string,
-  tideWmsUrl: string
+  tideWmsUrl: string,
+  tidesArray: TideMeasurement[],
 
 };
 
@@ -26,7 +33,8 @@ const defaults: TideStateModel = {
   dateTimeReady: true,
   tideHeight: 0.0,
   tideStation: 'Not Selected',
-  tideWmsUrl: ''
+  tideWmsUrl: '',
+  tidesArray: [],
 
 };
 
@@ -62,6 +70,13 @@ export class TideState {
   updateTideWmsUrl({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideWmsUrl) {
     patchState({
       tideWmsUrl: payload
+    })
+  }
+  
+  @Action(TideActions.UpdateTidesArray)
+  updateTidesArray({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTidesArray) {
+    patchState({
+      tidesArray: payload
     })
   }
 

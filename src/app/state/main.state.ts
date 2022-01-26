@@ -19,7 +19,7 @@ export interface MainStateModel {
 // the default state of those things
 const defaults: MainStateModel = {
   sideBarOpen: true,
-  location: [-17.9618, 122.2370],
+  location: [-17.9618, 122.27],
 };
 
 @State<MainStateModel>({

@@ -56,7 +56,7 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
         // TODO: THis should be done somewhere else.
         // TODO: Where is the best place to keep the tide and datetime in sync?
         this.store.dispatch(new TideActions.UpdateUnixTimestamp(moment(value).unix()))
-
+        this.tidesService.updateTidesArray();
       }),
       takeUntil(this.destroyed$)
     ).subscribe()

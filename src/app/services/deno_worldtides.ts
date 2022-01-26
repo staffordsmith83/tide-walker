@@ -48,6 +48,7 @@ type parameters = {
   start?: number,
   length?: number,
   step?: number,
+  localtime?: boolean,
 }
 
 type apiResponse = {

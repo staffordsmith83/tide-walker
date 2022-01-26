@@ -20,16 +20,25 @@
 
       <mat-sidenav-content fxLayout="column">
         <div fxFlex class="main" fxLayout="column">
-          <div class="map-container" fxFlex>
+
+
+          <div class="map-container" fxFlex="65">
             <app-map></app-map>
           </div>
-          <div id="chart-card" fxFlex>
+
+
+          <div id="chart-card" fxFlex="35">
             <app-daily-chart></app-daily-chart>
+          </div>
+
+
+          <div id="bottom-bar" fxFlex="5">
+            <app-top-bar></app-top-bar>
           </div>
 
         </div>
 
-        <app-top-bar></app-top-bar>
+
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div>

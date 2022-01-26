@@ -79,13 +79,21 @@ export class TidesService implements OnInit, OnDestroy {
       lat: location[0],
       lon: location[1],
       heights: true,
-      date: date
+      // date: date,  // Perhaps go back to using this, but was advancing one day forward than what I wanted...
+      start: unixTimeStamp,
+      days: 1,
+      localtime: true,
+
     })
-    
     
     console.log(result)
     return result.heights;
 
+  }
+
+  async updateTidesArray() {
+    let data = await this.getDailyTidesArray(); // get the tides array data  
+    this.store.dispatch(new TideActions.UpdateTidesArray(data));
   }
 
 

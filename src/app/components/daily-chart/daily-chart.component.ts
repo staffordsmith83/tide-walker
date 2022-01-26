@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Inject, NgZone, OnDestroy, OnInit, PLATFORM_I
 import * as am5 from "@amcharts/amcharts5";
 import * as am5xy from "@amcharts/amcharts5/xy";
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
-import am5themes_Responsive from '@amcharts/amcharts5/themes/Animated';
+// import am5themes_Responsive from '@amcharts/amcharts5/themes/Animated';
 import { TidesService } from 'src/app/services/tides.service';
 import { isPlatformBrowser } from '@angular/common';
 import { Chart } from '@amcharts/amcharts5/.internal/core/render/Chart';
@@ -10,7 +10,6 @@ import { Select } from '@ngxs/store';
 import { TideStateModel } from 'src/app/state/tide.state';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { curveLinear } from 'd3';
 
 
 @Component({
@@ -93,13 +92,34 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
 
-
-
+    chart.children.unshift(am5.Label.new(root, {
+      text: "Tide AMSL",
+      fontSize: 20,
+      fontWeight: "500",
+      textAlign: "center",
+      x: am5.percent(50),
+      centerX: am5.percent(50),
+      paddingTop: 0,
+      paddingBottom: 0
+    }));
+    
+    chart.children.unshift(am5.Label.new(root, {
+      text: "meters",
+      fontSize: 8,
+      fontWeight: "500",
+      textAlign: "left",
+      x: am5.percent(5),
+      centerX: am5.percent(50),
+      paddingTop: 0,
+      paddingBottom: 0,
+      // rotation: 90
+    }));
+    
 
     // Create axes
     // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
     var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-      baseInterval: { timeUnit: "hour", count: 1 },
+      baseInterval: { timeUnit: "minute", count: 30 },
       renderer: am5xy.AxisRendererX.new(root, { minGridDistance: 50 }),
       tooltip: am5.Tooltip.new(root, {})
     }));
@@ -120,7 +140,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
       valueYField: "height",
       valueXField: "date",
       valueField: "height",
-      curveFactory: curveLinear, // TODO SMOOTHING NOT WORKING - DUE TO data.processor maybe?
+      // curveFactory: curveLinear, // TODO SMOOTHING NOT WORKING - DUE TO data.processor maybe?
       tooltip: am5.Tooltip.new(root, {
         labelText: "value: {value}"
       })

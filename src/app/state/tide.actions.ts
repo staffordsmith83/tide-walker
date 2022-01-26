@@ -1,3 +1,5 @@
+import { TideMeasurement } from "./tide.state";
+
 export namespace TideActions {
 
   export class UpdateUnixTimestamp {
@@ -19,5 +21,19 @@ export namespace TideActions {
     static readonly type = "[Tide] Update Tide Wms Url"
     constructor(public payload: string) { }
   }
+
+  export class UpdateTidesArray {
+    static readonly type = "[Tide] Update Tides Array"
+    constructor(public payload: TideMeasurement[]) { }
+  }
+  
+  //////////////////////////////////////////////////////
+  // TODO:
+  // Implement one action to update everything? What is our main thing, tide height, or datetime? Datetime and Location are really the inputs, everything else flows from there.
+  // export class UpdateChartAndMapData {
+  //   static readonly type = "[Tide] Update Chart and Map Data"
+  //   constructor(public payload: string[]) { }
+  // }
+
 
 }
