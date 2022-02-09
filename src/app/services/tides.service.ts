@@ -41,6 +41,8 @@ export class TidesService implements OnInit, OnDestroy {
   // }
 
   updateTideHeightFromApi(dateTime: number) {
+    // TODO: Update the location each time?
+
     let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
 
     let response: Observable<any>;
@@ -74,7 +76,7 @@ export class TidesService implements OnInit, OnDestroy {
     let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
     let unixTimeStamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp)
     let date = new Date(unixTimeStamp * 1000);
-    
+
     const result = await this.worldtides.request({
       lat: location[0],
       lon: location[1],
@@ -85,14 +87,14 @@ export class TidesService implements OnInit, OnDestroy {
       localtime: true,
 
     })
-    
+
     console.log(result)
     return result.heights;
 
   }
 
   async updateTidesArray() {
-    let data = await this.getDailyTidesArray(); // get the tides array data  
+    let data = await this.getDailyTidesArray(); // get the tides array data
     this.store.dispatch(new TideActions.UpdateTidesArray(data));
   }
 

@@ -28,10 +28,6 @@ body {
   padding-right: 1em;
 }
 
-#bottom-bar {
-  // background-color: black;
-}
-
 .mat-card {
   transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
@@ -57,11 +53,24 @@ body {
 
 //////////////////////
 // TODO:
-// FOR SOME REASON HEIGHT OF STUPIC CHART MUST BE SET IN PIXELS...
+// FOR SOME REASON HEIGHT OF STUPID CHART MUST BE SET IN PIXELS...
 
 #chartdiv {
   height: 20em;
   position: relative;
   bottom: 0;
   width: 100%;
+}
+
+// .mat-card-header .mat-card-title {
+//   font-size: 16px;
+// }
+
+#info-bar {
+  .mat-toolbar {
+    background-color: rgba(0, 0, 0, 0);
+    color: rgb(0, 0, 0);
+    padding: 2px;
+    font-size: medium;
+  }
 }

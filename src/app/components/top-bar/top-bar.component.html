@@ -1,10 +1,14 @@
-<mat-toolbar class="footer">
+<mat-card
+  ><mat-toolbar class="footer">
+    <span fxFlex> Tide: {{ tideHeight$ | async }} m ASL </span>
+    <span fxFlex></span>
     <span fxFlex>
-        Tide: {{tideHeight$ | async}} m ASL
-    </span>
+      Date: {{ unixTimeStamp$ | async | sec2ms | date: "shortDate" }}</span
+    >
     <span fxFlex></span>
-    <span fxFlex> Date: {{unixTimeStamp$ | async | sec2ms | date:'shortDate'}}</span>
-    <span fxFlex></span>
-    <button mat-raised-button color="primary" (click)="updateClicked()">UPDATE</button>
-    <span fxFlex>Station: {{tideStation$ | async}}</span>
-</mat-toolbar>
+    <button mat-raised-button color="accent" (click)="updateClicked()">
+      UPDATE
+    </button>
+    <span fxFlex>Station: {{ tideStation$ | async }}</span>
+  </mat-toolbar></mat-card
+>

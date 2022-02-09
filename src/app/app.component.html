@@ -1,44 +1,40 @@
 <div class="app-container" fxLayout="column">
-  <mat-toolbar color="primary">
+  <mat-toolbar color="primary" fxLayout="row" fxLayoutGap="1em">
     <button mat-icon-button>
       <mat-icon (click)="toggleSideBarState()">date_range</mat-icon>
     </button>
 
     <span>Tide Walker</span>
 
-  </mat-toolbar>
+    <span fxFlex="50%"></span>
 
+    <div id="info-bar" fxFlex>
+      <app-top-bar></app-top-bar>
+    </div>
+  </mat-toolbar>
 
   <div fxFlex fxLayout="column">
     <mat-sidenav-container fxFlex [hasBackdrop]="false">
       <mat-sidenav mode="side" #sidenav [opened]="sideBarState$ | async">
-        <mat-nav-list style="text-align: center;">
+        <mat-nav-list style="text-align: center">
           <app-sidebar></app-sidebar>
-
         </mat-nav-list>
       </mat-sidenav>
 
       <mat-sidenav-content fxLayout="column">
         <div fxFlex class="main" fxLayout="column">
-
-
           <div class="map-container" fxFlex="65">
             <app-map></app-map>
           </div>
-
 
           <div id="chart-card" fxFlex="35">
             <app-daily-chart></app-daily-chart>
           </div>
 
-
-          <div id="bottom-bar" fxFlex="5">
+          <!-- <div id="bottom-bar" fxFlex="5">
             <app-top-bar></app-top-bar>
-          </div>
-
+          </div> -->
         </div>
-
-
       </mat-sidenav-content>
     </mat-sidenav-container>
   </div>

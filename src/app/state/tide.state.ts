@@ -45,12 +45,12 @@ const defaults: TideStateModel = {
 
 @Injectable()
 export class TideState {
-  @Action(TideActions.UpdateUnixTimestamp)
-  updateUnixTimestamp({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateUnixTimestamp) {
-    patchState({
-      unixTimestamp: payload
-    })
-  }
+  // @Action(TideActions.UpdateUnixTimestamp)
+  // updateUnixTimestamp({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateUnixTimestamp) {
+  //   patchState({
+  //     unixTimestamp: payload
+  //   })
+  // }
 
   @Action(TideActions.UpdateTideHeight)
   updateTideHeight({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideHeight) {
@@ -65,14 +65,14 @@ export class TideState {
       tideStation: payload
     })
   }
-  
+
   @Action(TideActions.UpdateTideWmsUrl)
   updateTideWmsUrl({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTideWmsUrl) {
     patchState({
       tideWmsUrl: payload
     })
   }
-  
+
   @Action(TideActions.UpdateTidesArray)
   updateTidesArray({ patchState }: StateContext<TideStateModel>, { payload }: TideActions.UpdateTidesArray) {
     patchState({

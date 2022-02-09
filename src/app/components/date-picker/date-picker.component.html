@@ -1,0 +1,12 @@
+<div class="user-input-container" style="width: 280px">
+  <mat-card class="demo-inline-calendar-card">
+    <mat-card-header>
+      <mat-card-title>Select Date Time</mat-card-title>
+    </mat-card-header>
+    <mat-calendar
+      [(selected)]="selected"
+      (selectedChange)="dateChanged($event)"
+    ></mat-calendar>
+  </mat-card>
+  <p>Selected date: {{ selected }}</p>
+</div>
