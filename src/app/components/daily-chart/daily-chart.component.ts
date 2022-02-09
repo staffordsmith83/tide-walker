@@ -102,7 +102,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
       paddingTop: 0,
       paddingBottom: 0
     }));
-    
+
     chart.children.unshift(am5.Label.new(root, {
       text: "meters",
       fontSize: 8,
@@ -114,7 +114,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
       paddingBottom: 0,
       // rotation: 90
     }));
-    
+
 
     // Create axes
     // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
@@ -143,12 +143,16 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
       // curveFactory: curveLinear, // TODO SMOOTHING NOT WORKING - DUE TO data.processor maybe?
       tooltip: am5.Tooltip.new(root, {
         labelText: "value: {value}"
-      })
+      }),
+      interactive: true,
     }));
+
+
 
     series0.data.processor = am5.DataProcessor.new(root, {
       dateFields: ["date"], dateFormat: "yyyy-MM-dd'T'HH:mm'Z'"
     });
+
 
 
 
@@ -168,6 +172,14 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     chart.appear(3000, 100);
     // root.resize();
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    // TODO: Add On Click behaviour to the series and store dt and height to state
+    series0.events.on("click", (ev) => {
+      console.log(ev);
+      debugger;
+    })
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     this.root = root;
     return series0;
