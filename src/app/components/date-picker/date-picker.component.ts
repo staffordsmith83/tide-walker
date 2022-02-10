@@ -24,16 +24,15 @@ export class DatePickerComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  dateChanged(event) {
-    console.log(event);
-    debugger;
-
+  async dateChanged(event) {
     // TODO: Simplify this chain of events
-    this.tidesService.updateTideHeightFromApi(event);
-    var unixTimestamp = moment(event).unix();
-    this.tidesService.updateTideHeightFromApi(unixTimestamp);
-    this.store.dispatch(new MainActions.ToggleSideBar());
-    this.store.dispatch(new TideActions.UpdateUnixTimestamp(moment(event).unix()));
-    this.tidesService.updateTidesArray();
+    // this.tidesService.updateTideHeightFromApi(event);
+    // var unixTimestamp = moment(event).unix();
+    // this.tidesService.updateTideHeightFromApi(unixTimestamp);
+    // this.store.dispatch(new MainActions.ToggleSideBar());
+    let dateTime = moment(event).unix();
+    await this.store.dispatch(new TideActions.UpdateUnixTimestamp(dateTime));
+    await this.tidesService.updateTidesArray();
+    this.tidesService.updateDisplayHeightAndWmsFromArray();
   }
 }

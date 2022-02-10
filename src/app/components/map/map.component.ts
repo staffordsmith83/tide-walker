@@ -1,4 +1,10 @@
-import { Component, OnInit, Inject, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { DOCUMENT } from '@angular/common';
 import { TidesService } from 'src/app/services/tides.service';
@@ -13,21 +19,21 @@ import { LayersService } from 'src/app/services/layers.service';
 import { MainStateModel } from 'src/app/state/main.state';
 import U from 'mapbox-gl-utils';
 
-
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
-
   // An efficient way to unsubscribe to observables, used in conjunction with ngOnDestroy
   destroyed$ = new Subject<void>();
 
   // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
-  unixTimestamp = this.store.selectSnapshot(state => (state.tide as TideStateModel).unixTimestamp);
-  tideHeight: number = -5;    // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
-  geoServerRoot = environment.geoServerRoot
+  unixTimestamp = this.store.selectSnapshot(
+    (state) => (state.tide as TideStateModel).unixTimestamp
+  );
+  tideHeight: number = -5; // Set a default value but we should initialise a real value in ngOnInit using the current DateTime.
+  geoServerRoot = environment.geoServerRoot;
 
   // nidemSourceLoaded: boolean = false;
 
@@ -36,65 +42,62 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   lng = 122.26865;
 
   // Get access to the state:
-  @Select(state => (state.tide as TideStateModel).unixTimestamp) unixTimeStamp$: Observable<number>;
-  @Select(state => (state.tide as TideStateModel).tideHeight) tideHeight$: Observable<number>;
-  @Select(state => (state.tide as TideStateModel).tideWmsUrl) tideWmsUrl$: Observable<number>;
+  @Select((state) => (state.tide as TideStateModel).unixTimestamp)
+  unixTimeStamp$: Observable<number>;
+  @Select((state) => (state.tide as TideStateModel).tideHeight)
+  tideHeight$: Observable<number>;
+  @Select((state) => (state.tide as TideStateModel).tideWmsUrl)
+  tideWmsUrl$: Observable<number>;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private tidesService: TidesService,
     private store: Store,
     private layersService: LayersService
-  ) { }
+  ) {}
 
   async ngOnInit() {
-
     // // Check if source is loaded
     // // TODO this may need to be setup as an observable...
     // this.nidemSourceLoaded = this.map?.isSourceLoaded('bathymetry-data') || false;
 
-
-
-    // Get the initial tide height. TODO: Should this be done somewhere else?
+    // TODO: Should this be done somewhere else?
+    // Get the initial tide height.
     this.tidesService.updateTideHeightFromApi(this.unixTimestamp);
 
-
     // Watch Tide Height - when it changes, update the wms.
-    this.tideHeight$.pipe(
-      tap(height => {
-        this.tideHeight = height;
-        this.updateWms();
-      }),
-      takeUntil(this.destroyed$)
-    ).subscribe();
-
-
+    this.tideHeight$
+      .pipe(
+        tap((height) => {
+          this.tideHeight = height;
+          this.updateWms();
+        }),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe();
 
     // Watch the tidesWmsUrl for changes
-    this.tideWmsUrl$.pipe(
-      tap(tileUrl => {
-        this.updateWms();
-      }),
-      takeUntil(this.destroyed$)
-    ).subscribe();
-
-
-
-
-
-
+    this.tideWmsUrl$
+      .pipe(
+        tap((tileUrl) => {
+          this.updateWms();
+        }),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe();
 
     await this.initialiseMap();
     this.setupMapFunctionality();
   }
 
   async initialiseMap() {
-
     // Generate the WMS request in layersService and update the tiles url in the state
     // await this.layersService.generateTidesWmsUrl();
 
     //  Initialise the Map
-    let location = this.store.selectSnapshot(state => (state.main as MainStateModel).location);
+    let location = this.store.selectSnapshot(
+      (state) => (state.main as MainStateModel).location
+    );
     this.map = new mapboxgl.Map({
       container: 'map',
       style: {
@@ -108,9 +111,13 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             ],
             tileSize: 256,
           },
-          'nidem': {
+          nidem: {
             type: 'raster',
-            tiles: [this.store.selectSnapshot(state => (state.tide as TideStateModel).tideWmsUrl)],
+            tiles: [
+              this.store.selectSnapshot(
+                (state) => (state.tide as TideStateModel).tideWmsUrl
+              ),
+            ],
           },
         },
         layers: [
@@ -127,10 +134,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
             type: 'raster',
             source: 'nidem',
             paint: {
-              "raster-opacity": 0.7
-            }
-          }
-        ]
+              'raster-opacity': 0.7,
+            },
+          },
+        ],
         // glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
       },
       zoom: 12,
@@ -152,22 +159,20 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     U.init(this.map);
   }
 
-
-
   setupMapFunctionality() {
     ////////////////////////////////////////////////////////////////////////////////////////
     // EVENT DRIVEN BEHAVIOURS
-
 
     this.map.on('moveend', () => {
       console.log('A moveend event occurred.');
       let center = this.map?.getCenter();
       if (center) {
-        this.store.dispatch(new MainActions.UpdateLocation([center.lat, center.lng]));
+        this.store.dispatch(
+          new MainActions.UpdateLocation([center.lat, center.lng])
+        );
       }
     });
   }
-
 
   async updateWms() {
     /////////////////////////////////
@@ -176,7 +181,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Generate the WMS request in layersService and update the tiles url in the state
     let fullRequest = await this.layersService.generateTidesWmsUrl();
-
 
     // Check if the layer exists, if it does remove it
     if (this.layerExists('nidem_wms')) {
@@ -196,11 +200,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'raster',
       source: 'nidem',
       paint: {
-        "raster-opacity": 0.7
-      }
+        'raster-opacity': 0.7,
+      },
     });
   }
-
 
   ngAfterViewInit() {
     // this.map?.setPaintProperty(
@@ -212,12 +215,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   layerExists(layerName): boolean {
     if (this.map?.getLayer(layerName)) {
-      return true
+      return true;
+    } else {
+      return false;
     }
-    else {
-      return false
-    }
-
   }
 
   ngOnDestroy() {
@@ -225,10 +226,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroyed$.next();
     this.destroyed$.complete();
   }
-
 }
-
-
 
 // Do stuff when we click on the map
 // When a click event occurs on a feature in the places layer, open a popup at the
