@@ -40,6 +40,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
   lng = 122.26865;
+  tilesLoaded = false;
 
   // Get access to the state:
   @Select((state) => (state.tide as TideStateModel).unixTimestamp)
@@ -172,6 +173,17 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         );
       }
     });
+
+    // Example of a MapDataEvent of type "sourcedata"
+    this.map.on('sourcedata', (e) => {
+      this.store.dispatch(new MainActions.UpdateMapLayersLoaded(e.isSourceLoaded));
+    });
+
+    this.map.on('idle', (e) => {
+      this.store.dispatch(true);
+    });
+
+
   }
 
   async updateWms() {

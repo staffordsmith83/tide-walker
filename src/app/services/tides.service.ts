@@ -98,6 +98,11 @@ export class TidesService implements OnInit, OnDestroy {
     this.store.dispatch(new TideActions.UpdateTideHeight(this._getMinHeight(tidesArray)));
   }
 
+  updateDisplayHeightAndWmsFromChart(tideHeight: number)
+  {
+    this.store.dispatch(new TideActions.UpdateTideHeight(tideHeight));
+  }
+
 
   // helper functions to get minimum and maximum objects from tide array
   // TODO: Should return the whole object, not just the height value

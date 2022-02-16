@@ -16,5 +16,9 @@ export namespace MainActions {
     // should be [lat, long]
     constructor(public payload: [number, number] | undefined) { }
   }
+  export class UpdateMapLayersLoaded {
+    static readonly type = "[Main] Update Map Layers Loaded";
+    constructor(public payload: boolean) { }
+  }
 
 }

@@ -14,12 +14,14 @@ import { MainActions } from "./main.actions";
 export interface MainStateModel {
   sideBarOpen: boolean;
   location: [number, number];
+  mapLayersLoaded: boolean;
 };
 
 // the default state of those things
 const defaults: MainStateModel = {
   sideBarOpen: true,
   location: [-17.9618, 122.27],
+  mapLayersLoaded: false,
 };
 
 @State<MainStateModel>({
@@ -58,6 +60,13 @@ export class MainState {
   updateLocations({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateLocation) {
     patchState({
       location: payload   // should be [lat, long]
+    })
+  }
+
+  @Action(MainActions.UpdateMapLayersLoaded)
+  updateMapLayersLoaded({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateMapLayersLoaded) {
+    patchState({
+      mapLayersLoaded: payload
     })
   }
 

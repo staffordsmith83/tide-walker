@@ -36,6 +36,8 @@ import { DailyChartComponent } from './components/daily-chart/daily-chart.compon
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ProgressComponent } from './components/progress/progress.component';
 
 @NgModule({
   imports: [
@@ -56,6 +58,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSidenavModule,
+    MatProgressSpinnerModule,
     DlDateTimeDateModule, // <--- Determines the data type of the model
     DlDateTimePickerModule,
     NgxsModule.forRoot([MainState, TideState], {
@@ -73,6 +76,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     Sec2msPipe,
     DailyChartComponent,
     DatePickerComponent,
+    ProgressComponent,
   ],
   bootstrap: [AppComponent],
 })

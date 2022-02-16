@@ -1,0 +1,13 @@
+<mat-card *ngIf="!(mapLayersLoaded$ | async)">
+  <span>
+    LOADING MAP LAYERS
+    <mat-progress-spinner
+      style="margin: 0 auto"
+      color="Accent"
+      mode="indeterminate"
+      value="50"
+      [diameter]="35"
+    >
+    </mat-progress-spinner
+  ></span>
+</mat-card>

@@ -3,6 +3,7 @@ import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { LayersService } from 'src/app/services/layers.service';
 import { TidesService } from 'src/app/services/tides.service';
+import { MainStateModel } from 'src/app/state/main.state';
 import { TideStateModel } from 'src/app/state/tide.state';
 
 @Component({

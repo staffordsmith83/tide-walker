@@ -8,24 +8,8 @@
       <dl-date-time-picker startView="day" maxView="year" minView="minute" [ngModel]="dateTimeValuesChanged$ | async"
         (ngModelChange)="dateTimeValuesChanged$.next($event)">
       </dl-date-time-picker>
-      <p>{{selectedDateTime}}</p>
-      <br>
-
-
+      <!-- <p>{{selectedDateTime}}</p> -->
     </div>
   </mat-card-content>
 
 </mat-card>
-
-<!-- <mat-card>
-  <mat-card-header>
-    <mat-card-title>Tideheight</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <mat-form-field appearance="fill">
-      <input matInput #input maxlength="10" placeholder="'enter tide height'" [(ngModel)]="tideHeight"
-        (keydown.enter)="onTideUpdated(tideHeight); resetDateTime()" />
-      <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
-    </mat-form-field>
-  </mat-card-content>
-</mat-card> -->
