@@ -132,7 +132,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Create axes
     // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-    var xAxis = chart.xAxes.push(
+    let xAxis = chart.xAxes.push(
       am5xy.DateAxis.new(root, {
         baseInterval: { timeUnit: 'minute', count: 30 },
         renderer: am5xy.AxisRendererX.new(root, { minGridDistance: 50 }),
@@ -140,7 +140,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
 
-    var yAxis = chart.yAxes.push(
+    let yAxis = chart.yAxes.push(
       am5xy.ValueAxis.new(root, {
         renderer: am5xy.AxisRendererY.new(root, {}),
         tooltip: am5.Tooltip.new(root, {}),
@@ -151,7 +151,7 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Create series
     // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-    var tideSeries = chart.series.push(
+    let tideSeries = chart.series.push(
       am5xy.LineSeries.new(root, {
         // calculateAggregates: true,
         xAxis: xAxis,
@@ -189,12 +189,13 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Create animating bullet by adding two circles in a bullet container and
     // animating radius and opacity of one of them.
+
     tideSeries.bullets.push((root, series, dataItem) => {
-      var container = am5.Container.new(root, {});
-      var circle0 = container.children.push(
+      let container = am5.Container.new(root, {});
+      let circle0 = container.children.push(
         am5.Circle.new(root, {
-          radius: 5,
-          fill: am5.color(0xff0000),
+          radius: 3,
+          fill: am5.color(0x000000),
         })
       );
       circle0.events.on('click', (ev) => {
@@ -202,35 +203,30 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.dispatch(
           new TideActions.UpdateTideHeight(dataItem.get('valueY')) // Start the chain of events to update the tide height and WMS TODO: change this if refactor the signal flow
         );
-        // // TODO: Changing the unix timestamp triggers changes in other parts of the application. Decouple?
-        // this.store.dispatch(
-        //   new TideActions.UpdateUnixTimestamp(dataItem.get('valueX'))   // Start the chain of events to update the tide height and WMS TODO: change this if refactor the signal flow
-        // );
-      });
 
-      // Bullet Animation Section
-      // TODO: Need to find a way to only have the fancy bullet animation for the data point that is currently selected
-      var circle1 = container.children.push(
-        am5.Circle.new(root, {
-          radius: 5,
-          fill: am5.color(0xff0000),
-        })
-      );
+        // Bullet Animation Section -  add Animation still within this On Click block...
+        let circle1 = container.children.push(
+          am5.Circle.new(root, {
+            radius: 5,
+            fill: am5.color(0xff0000),
+          })
+        );
 
-      circle1.animate({
-        key: 'radius',
-        to: 20,
-        duration: 1000,
-        easing: am5.ease.out(am5.ease.cubic),
-        loops: Infinity,
-      });
-      circle1.animate({
-        key: 'opacity',
-        to: 0,
-        from: 1,
-        duration: 1000,
-        easing: am5.ease.out(am5.ease.cubic),
-        loops: Infinity,
+        circle1.animate({
+          key: 'radius',
+          to: 20,
+          duration: 1000,
+          easing: am5.ease.out(am5.ease.cubic),
+          loops: Infinity,
+        });
+        circle1.animate({
+          key: 'opacity',
+          to: 0,
+          from: 1,
+          duration: 1000,
+          easing: am5.ease.out(am5.ease.cubic),
+          loops: Infinity,
+        });
       });
 
       return am5.Bullet.new(root, {

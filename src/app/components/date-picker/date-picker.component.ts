@@ -27,7 +27,7 @@ export class DatePickerComponent implements OnInit {
   async dateChanged(event) {
     // TODO: Simplify this chain of events
     // this.tidesService.updateTideHeightFromApi(event);
-    // var unixTimestamp = moment(event).unix();
+    // let unixTimestamp = moment(event).unix();
     // this.tidesService.updateTideHeightFromApi(unixTimestamp);
     // this.store.dispatch(new MainActions.ToggleSideBar());
     let dateTime = moment(event).unix();

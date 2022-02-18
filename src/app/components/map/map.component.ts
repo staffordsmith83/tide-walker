@@ -244,8 +244,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 // When a click event occurs on a feature in the places layer, open a popup at the
 // location of the feature, with description HTML from its properties.
 // map.on('click', 'poi', function (e) {
-//   var coordinates = e.features[0].geometry.coordinates[0][0].slice();
-//   var description = e.features[0].properties.description;
+//   let coordinates = e.features[0].geometry.coordinates[0][0].slice();
+//   let description = e.features[0].properties.description;
 
 //   // Ensure that if the map is zoomed out such that multiple
 //   // copies of the feature are visible, the popup appears

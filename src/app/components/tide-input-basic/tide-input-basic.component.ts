@@ -50,9 +50,9 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
 
         // ***************************************************************************************************************************************
         // Uncomment this next line to hide sidenav automatically when getting new tide level
-        this.store.dispatch(new MainActions.ToggleSideBar());      
+        this.store.dispatch(new MainActions.ToggleSideBar());
         // ***************************************************************************************************************************************
-        
+
         // TODO: THis should be done somewhere else.
         // TODO: Where is the best place to keep the tide and datetime in sync?
         this.store.dispatch(new TideActions.UpdateUnixTimestamp(moment(value).unix()))
@@ -68,12 +68,12 @@ export class TideInputBasicComponent implements OnInit, OnDestroy {
   }
 
   calculateTide(dateTime: number): void {
-    // Prompt the tides service to recalculate the global tideHeight variable
+    // Prompt the tides service to recalculate the global tideHeight letiable
     this.tidesService.updateTideHeightFromApi(dateTime);
   }
 
   calculateTideFromDate(selectedDate: any) {
-    var unixTimestamp = moment(selectedDate).unix();
+    let unixTimestamp = moment(selectedDate).unix();
     this.tidesService.updateTideHeightFromApi(unixTimestamp);
 
   }
