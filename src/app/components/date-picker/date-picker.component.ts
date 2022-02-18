@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { Store } from '@ngxs/store';
 import { MainActions } from 'src/app/state/main.actions';
 import { TideActions } from 'src/app/state/tide.actions';
+import { TideStateModel } from 'src/app/state/tide.state';
 
 @Component({
   selector: 'app-date-picker',
@@ -22,7 +23,13 @@ export class DatePickerComponent implements OnInit {
 
   constructor(private tidesService: TidesService, private store: Store) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Set an initial tide height. But really we should just set this to the value of the tideHeight Subject in ngOnInit.
+    let unix = this.store.selectSnapshot(
+      (state) => (state.tide as TideStateModel).unixTimestamp
+    );
+    this.selected = new Date(unix * 1000);
+  }
 
   async dateChanged(event) {
     // TODO: Simplify this chain of events

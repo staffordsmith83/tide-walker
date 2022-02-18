@@ -141,7 +141,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         ],
         // glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
       },
-      zoom: 14,
+      zoom: 13,
       center: [location[1], location[0]],
     });
 
