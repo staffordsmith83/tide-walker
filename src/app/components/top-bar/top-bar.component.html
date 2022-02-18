@@ -3,7 +3,7 @@
   <span fxFlex> Tide: {{ tideHeight$ | async }} m ASL </span>
   <span fxFlex></span>
   <span fxFlex>
-    Date: {{ unixTimeStamp$ | async | sec2ms | date: "shortDate" }}</span
+    Date: {{ unixTimeStamp$ | async | sec2ms | date: 'dd/MM/yyyy' }}</span
   >
   <span fxFlex></span>
   <button mat-raised-button color="accent" (click)="updateClicked()">

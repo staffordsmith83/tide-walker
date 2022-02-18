@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Select, Store } from '@ngxs/store';
+import { Observable, Subscription } from 'rxjs';
 import { MessageService } from 'src/app/services/index';
 import { TidesService } from 'src/app/services/tides.service';
+import { TideStateModel } from 'src/app/state/tide.state';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,13 +15,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
   tidesHistory: any[] = [];
   tidesSubscription: Subscription;
   tideHeight: string = '0.0';
+  legendGraphicUrl: string;
 
+  // @Select((state) => (state.tide as TideStateModel).legendGraphicUrl) legendGraphicUrl$: Observable<string>;
 
   constructor(
     private messageService: MessageService,
-    private tidesService: TidesService
+    private tidesService: TidesService,
+    private store: Store
   ) {
-    
     // // subscribe to tideHeightObs Subject
     // this.tidesSubscription = this.tidesService
     //   .getTideHeightObs()
@@ -27,7 +32,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     //   });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.legendGraphicUrl = this.store.selectSnapshot(
+      (state) => (state.tide as TideStateModel).legendGraphicUrl
+    );
+  }
 
   ngOnDestroy() {
     // unsubscribe to ensure no memory leaks
@@ -46,6 +55,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   getDailyClicked() {
-    this.tidesService.getDailyTidesArray()
+    this.tidesService.getDailyTidesArray();
   }
 }

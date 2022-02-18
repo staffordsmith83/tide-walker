@@ -1,43 +1,16 @@
 <div fxLayout="column" fxFill>
+  <app-date-picker></app-date-picker>
 
-<app-date-picker></app-date-picker>
-<app-progress></app-progress>
+    <mat-card>
+    <div id="legend" fxLayout="row">
+      <span> <img src="{{ legendGraphicUrl }}" alt="Legend Graphic" /></span>
+      <span fxFlex></span></div
+  ></mat-card>
 
-  <!-- <app-tide-input-basic (tideUpdated)="onNewTideReceived($event)" fxFlex>
-  </app-tide-input-basic> -->
-
-
-  <!-- <mat-card>
-
-  <mat-card-content>
-    <span>Tide Values List:</span>
-    <mat-list role="list">
-      <mat-list-item role="listitem" *ngFor="let tide of tidesHistory" style="color: black">{{ tide }}</mat-list-item>
-    </mat-list>
-
-    <button *ngIf="tidesHistory?.length > 0" mat-raised-button color="primary" (click)="onButtonClicked()">
-      Clear History
-    </button>
-  </mat-card-content>
-</mat-card> -->
-
-  <!-- Legend graphic not being returned from geoserver! -->
-
-  <!-- <div id="bottom-bar" fxLayout="row">
-  <span>
-    <img
-      src="http://ec2-13-55-247-227.ap-southeast-2.compute.amazonaws.com:8080/geoserver/NIDEM/wms?service=WMS&version=1.0.0&request=GetLegendGraphic&LAYER=NIDEM_mosaic&WIDTH=20&HEIGHT=20&FORMAT=image/png"
-      alt="Legend Graphic"></span>
-  <span fxFlex></span>
-</div> -->
+  <app-progress></app-progress>
 
 
-  <!-- <div id="chart-card" fxFlex>
-    <app-daily-chart></app-daily-chart>
-  </div> -->
 
-
-  <!-- <div fxFlex><img src="assets/icons/footprint1.png" alt="pin" width="200" /></div>
-  <div fxFlex></div> -->
-
+  <div fxFlex><img src="assets/icons/footprint1.png" alt="pin" width="140" /></div>
+  <div fxFlex></div>
 </div>
