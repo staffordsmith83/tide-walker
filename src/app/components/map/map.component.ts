@@ -39,7 +39,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   map: mapboxgl.Map | undefined;
   lat = -18.0707;
-  lng = 122.26865;
+  lng = 122.38865;
   tilesLoaded = false;
 
   // Get access to the state:
@@ -141,7 +141,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         ],
         // glyphs: 'http://localhost:4200/assets/fonts/{fontstack}/{range}.pbf',
       },
-      zoom: 12,
+      zoom: 14,
       center: [location[1], location[0]],
     });
 
@@ -179,7 +179,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       this.store.dispatch(new MainActions.UpdateMapLayersLoaded(e.isSourceLoaded));
     });
 
-    this.map.on('idle', (e) => {
+    this.map.on('idle', () => {
       this.store.dispatch(true);
     });
 

@@ -210,28 +210,28 @@ export class DailyChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Bullet Animation Section
       // TODO: Need to find a way to only have the fancy bullet animation for the data point that is currently selected
-      // var circle1 = container.children.push(
-      //   am5.Circle.new(root, {
-      //     radius: 5,
-      //     fill: am5.color(0xff0000),
-      //   })
-      // );
+      var circle1 = container.children.push(
+        am5.Circle.new(root, {
+          radius: 5,
+          fill: am5.color(0xff0000),
+        })
+      );
 
-      // circle1.animate({
-      //   key: 'radius',
-      //   to: 20,
-      //   duration: 1000,
-      //   easing: am5.ease.out(am5.ease.cubic),
-      //   loops: Infinity,
-      // });
-      // circle1.animate({
-      //   key: 'opacity',
-      //   to: 0,
-      //   from: 1,
-      //   duration: 1000,
-      //   easing: am5.ease.out(am5.ease.cubic),
-      //   loops: Infinity,
-      // });
+      circle1.animate({
+        key: 'radius',
+        to: 20,
+        duration: 1000,
+        easing: am5.ease.out(am5.ease.cubic),
+        loops: Infinity,
+      });
+      circle1.animate({
+        key: 'opacity',
+        to: 0,
+        from: 1,
+        duration: 1000,
+        easing: am5.ease.out(am5.ease.cubic),
+        loops: Infinity,
+      });
 
       return am5.Bullet.new(root, {
         sprite: container,

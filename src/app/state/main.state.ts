@@ -20,7 +20,7 @@ export interface MainStateModel {
 // the default state of those things
 const defaults: MainStateModel = {
   sideBarOpen: true,
-  location: [-17.9618, 122.27],
+  location: [-17.965, 122.26],
   mapLayersLoaded: false,
 };
 
@@ -57,14 +57,14 @@ export class MainState {
   }
 
   @Action(MainActions.UpdateLocation)
-  updateLocations({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateLocation) {
+  updateLocations({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateLocation): void {
     patchState({
       location: payload   // should be [lat, long]
     })
   }
 
   @Action(MainActions.UpdateMapLayersLoaded)
-  updateMapLayersLoaded({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateMapLayersLoaded) {
+  updateMapLayersLoaded({ patchState }: StateContext<MainStateModel>, { payload }: MainActions.UpdateMapLayersLoaded): void {
     patchState({
       mapLayersLoaded: payload
     })
